@@ -21,14 +21,14 @@ export const ItemRow = memo(function ItemRow({
   const unused = unusedNames.has(item.name.toLowerCase());
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3.5">
+    <div className="flex items-center gap-3" style={{ padding: 'var(--card-px)' }}>
       <button onClick={() => togglePacked(item.id, !item.isPacked)} className="p-1 -m-1">
         {item.isPacked
           ? <CheckCircle2 size={22} className="text-[var(--salmon)]" />
           : <Circle size={22} className="text-[var(--lavender)] opacity-40" />}
       </button>
       <div className="flex-1 min-w-0">
-        <p className={`text-[16px] font-medium ${item.isPacked ? 'text-[var(--text-secondary)] line-through' : 'text-[var(--text-primary)]'}`}>
+        <p className={`text-[15px] font-medium ${item.isPacked ? 'text-[var(--text-secondary)] line-through' : 'text-[var(--text-primary)]'}`}>
           {item.name}
         </p>
         {item.quantity > 1 && (
@@ -38,7 +38,7 @@ export const ItemRow = memo(function ItemRow({
           <p className="text-[12px] text-[var(--salmon)] cursor-help" title="Based on your feedback from a previous trip">Not used last trip</p>
         )}
         {restricted && (
-          <p className="text-[11px] font-medium text-[var(--salmon)] flex items-center gap-1">
+          <p className="text-[12px] font-medium text-[var(--salmon)] flex items-center gap-1">
             <LucideIcon name="plane" size={11} /> Check-in bag only
           </p>
         )}

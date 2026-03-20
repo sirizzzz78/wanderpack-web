@@ -44,6 +44,7 @@
   --blue-pale: #C0CCD8;
   --blue-dark: #4A6880;
   --salmon-tint: #FAE8E0;
+  --home-bg: #E8F0F8;
 
   /* Typography — fluid scaling */
   --font-family: 'Quicksand', system-ui, sans-serif;
@@ -78,6 +79,7 @@
     --text-secondary: #8A9BB5;
     --button-disabled: #3A4450;
     --border: #3A4450;
+    --home-bg: #1A1F24;
   }
 }
 

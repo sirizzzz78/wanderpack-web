@@ -26,12 +26,12 @@ export function LearnedItemsSheet({ onClose }: LearnedItemsSheetProps) {
   }
 
   return (
-    <div className="px-6 pb-8 max-h-[70dvh] overflow-y-auto">
+    <div className="max-h-[70dvh] overflow-y-auto" style={{ padding: '0 var(--card-px) 2rem' }}>
       {items.length > 0 && (
-        <Card noPadding className="overflow-hidden mb-4">
+        <Card className="mb-4">
           {items.map((item, i) => (
             <div key={item.name}>
-              <div className="flex items-center gap-3 px-4 py-3">
+              <div className="flex items-center gap-3">
                 <div className="flex-1 min-w-0">
                   <p className="text-[15px] font-medium text-[var(--text-primary)]">{item.name}</p>
                   <p className="text-[12px] text-[var(--text-secondary)]">{item.category}</p>
@@ -43,7 +43,7 @@ export function LearnedItemsSheet({ onClose }: LearnedItemsSheetProps) {
                   <Trash2 size={16} className="text-[var(--destructive)]" />
                 </button>
               </div>
-              {i < items.length - 1 && <div className="border-b border-[var(--border)] ml-4" />}
+              {i < items.length - 1 && <div className="border-b border-[var(--border)] my-2.5" />}
             </div>
           ))}
         </Card>
@@ -54,10 +54,10 @@ export function LearnedItemsSheet({ onClose }: LearnedItemsSheetProps) {
           <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-[var(--blue-faint)] mb-2 px-1">
             Not used on last trip
           </p>
-          <Card noPadding className="overflow-hidden">
+          <Card>
             {unusedNames.map((name, i) => (
               <div key={name}>
-                <div className="flex items-center justify-between px-4 py-2.5">
+                <div className="flex items-center justify-between">
                   <span className="text-[15px] font-medium text-[var(--text-primary)] capitalize">{name}</span>
                   <button
                     onClick={() => clearUnused([name])}
@@ -66,7 +66,7 @@ export function LearnedItemsSheet({ onClose }: LearnedItemsSheetProps) {
                     Dismiss
                   </button>
                 </div>
-                {i < unusedNames.length - 1 && <div className="border-b border-[var(--border)] ml-4" />}
+                {i < unusedNames.length - 1 && <div className="border-b border-[var(--border)] my-2.5" />}
               </div>
             ))}
           </Card>

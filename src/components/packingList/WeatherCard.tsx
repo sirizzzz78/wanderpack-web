@@ -45,15 +45,13 @@ export function WeatherCardComponent({ summary }: WeatherCardProps) {
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[12px] font-medium text-[var(--lavender)] px-2 py-0.5 rounded-[12px]"
-            style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 12%, transparent)' }}>
+          <span className="text-[12px] font-medium text-[var(--text-secondary)]">
             {weatherCondition(summary.dominantWeatherCode)}
           </span>
           <button
             onClick={() => setFahrenheit(f => !f)}
             aria-label={`Switch to ${fahrenheit ? 'Celsius' : 'Fahrenheit'}`}
-            className="text-[12px] font-semibold text-[var(--lavender)] px-2 py-0.5 rounded-[12px] hover:opacity-80 transition-opacity"
-            style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 12%, transparent)' }}
+            className="text-[12px] font-semibold text-[var(--lavender)] hover:opacity-80 transition-opacity"
           >
             {fahrenheit ? '°C' : '°F'}
           </button>
@@ -81,7 +79,7 @@ export function WeatherCardComponent({ summary }: WeatherCardProps) {
         {summary.maxPrecipProb >= 20 && (
           <div className="flex flex-col items-center">
             <Umbrella size={20} className="text-[var(--lavender)]" />
-            <p className="text-[13px] font-semibold text-[var(--text-primary)]">{summary.maxPrecipProb}%</p>
+            <p className="text-[12px] font-semibold text-[var(--text-primary)]">{summary.maxPrecipProb}%</p>
             <p className="text-[10px] text-[var(--text-secondary)]">rain</p>
           </div>
         )}

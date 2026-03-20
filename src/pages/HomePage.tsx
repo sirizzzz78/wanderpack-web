@@ -78,7 +78,7 @@ export function HomePage() {
   const deleteTargetTrip = trips.find(t => t.id === deleteTarget);
 
   return (
-    <div className="min-h-dvh bg-[var(--background)] relative">
+    <div className="min-h-dvh relative" style={{ backgroundColor: 'var(--home-bg)' }}>
       {/* Mountain background at bottom */}
       <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
         <MountainBackground />
@@ -94,7 +94,7 @@ export function HomePage() {
             <button
               onClick={() => setShowLearned(true)}
               aria-label="Learned items"
-              className="flex items-center gap-1.5 px-3 h-9 rounded-full"
+              className="flex items-center gap-2 px-8 py-2.5 rounded-full"
               style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 12%, transparent)' }}
             >
               <Brain size={16} className="text-[var(--lavender)]" />
@@ -196,17 +196,19 @@ export function HomePage() {
         </div>
       </div>
 
-      {/* FAB */}
-      <div className="sticky bottom-10 z-20 flex justify-end pr-6 pointer-events-none" style={{ marginTop: '-3.5rem' }}>
-        <button
-          onClick={() => navigate('/setup')}
-          aria-label="Create new trip"
-          className="pointer-events-auto w-14 h-14 rounded-full bg-[var(--salmon)] flex items-center justify-center shadow-lg active:scale-95 transition-transform"
-          style={{ boxShadow: '0 4px 12px color-mix(in srgb, var(--salmon) 30%, transparent)' }}
-        >
-          <Plus size={22} className="text-white" strokeWidth={2.5} />
-        </button>
-      </div>
+      {/* FAB — fixed bottom-right */}
+      <button
+        onClick={() => navigate('/setup')}
+        aria-label="Create new trip"
+        className="fixed z-20 w-14 h-14 rounded-full bg-[var(--salmon)] flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+        style={{
+          bottom: 'max(env(safe-area-inset-bottom, 0px) + 1.5rem, 2rem)',
+          right: 'max(calc((100vw - 480px) / 2 + 1.5rem), 1.5rem)',
+          boxShadow: '0 4px 12px color-mix(in srgb, var(--salmon) 30%, transparent)',
+        }}
+      >
+        <Plus size={22} className="text-white" strokeWidth={2.5} />
+      </button>
 
       {/* Delete dialog */}
       <ConfirmDialog

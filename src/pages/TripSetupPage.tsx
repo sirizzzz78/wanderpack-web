@@ -159,7 +159,7 @@ export function TripSetupPage() {
           </p>
         </div>
         {/* S11: Trip summary */}
-        <div className="w-full max-w-sm rounded-[14px] bg-[var(--surface)] border border-[var(--border)] p-4 flex flex-col gap-2">
+        <div className="w-full max-w-sm rounded-[14px] bg-[var(--surface)] border border-[var(--border)] flex flex-col gap-2" style={{ padding: 'var(--card-px)' }}>
           <div className="flex items-center justify-between">
             <span className="text-[13px] text-[var(--text-secondary)]">Destination</span>
             <span className="text-[14px] font-medium text-[var(--text-primary)]">{destination}</span>
@@ -263,7 +263,7 @@ export function TripSetupPage() {
               ))}
             </div>
 
-            <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-[var(--blue-faint)] mt-6 mb-1">How are you getting there?</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-[var(--blue-faint)] mb-1" style={{ marginTop: 'var(--step-content-gap)' }}>How are you getting there?</p>
             <p className="text-[12px] text-[var(--text-secondary)] mb-2.5">Select all that apply</p>
             <div className="grid grid-cols-3 gap-3">
               {TRANSPORTS.map(mode => {

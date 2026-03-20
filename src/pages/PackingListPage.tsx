@@ -224,7 +224,7 @@ export function PackingListPage() {
             style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--lavender) 30%, transparent)' }}>
             <BadgeCheck size={20} className="text-[var(--lavender)] shrink-0" />
             <div>
-              <p className="text-[14px] font-semibold text-[var(--text-primary)]">Trip completed</p>
+              <p className="text-[13px] font-semibold text-[var(--text-primary)]">Trip completed</p>
               <p className="text-[12px] text-[var(--text-secondary)]">{packed} of {total} items packed · {getTripDays(trip.startDate, trip.endDate)} days</p>
             </div>
           </div>
@@ -236,7 +236,7 @@ export function PackingListPage() {
             style={{ backgroundColor: 'color-mix(in srgb, var(--salmon) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--salmon) 25%, transparent)' }}>
             <LucideIcon name="plane" size={16} className="text-[var(--salmon)] shrink-0" />
             <div>
-              <p className="text-[14px] font-semibold text-[var(--text-primary)]">
+              <p className="text-[13px] font-semibold text-[var(--text-primary)]">
                 {restrictedItems.length} item{restrictedItems.length !== 1 ? 's' : ''} must go in your check-in bag
               </p>
               <p className="text-[12px] text-[var(--text-secondary)]">TSA restricts these from carry-on luggage.</p>
@@ -248,16 +248,16 @@ export function PackingListPage() {
         <Card className={`${allPacked ? 'border-[var(--salmon)]' : ''}`}
           bg={allPacked ? 'color-mix(in srgb, var(--salmon) 8%, var(--surface))' : undefined}>
           <div className="flex items-center justify-between mb-2.5">
-            <span className={`text-[15px] font-medium ${allPacked ? 'text-[var(--salmon)]' : 'text-[var(--text-primary)]'}`}>
+            <span className={`text-[14px] font-medium ${allPacked ? 'text-[var(--salmon)]' : 'text-[var(--text-primary)]'}`}>
               {packed} of {total} packed
             </span>
-            <span className={`text-[15px] font-bold ${allPacked ? 'text-[var(--salmon)]' : 'text-[var(--lavender)]'}`}>
+            <span className={`text-[14px] font-bold ${allPacked ? 'text-[var(--salmon)]' : 'text-[var(--lavender)]'}`}>
               {Math.round(progress * 100)}%
             </span>
           </div>
           <ProgressBar progress={progress} complete={allPacked} />
           {allPacked && (
-            <p className="text-[13px] font-medium text-[var(--salmon)] mt-2">All packed — you're ready to go!</p>
+            <p className="text-[12px] font-medium text-[var(--salmon)] mt-2">All packed — you're ready to go!</p>
           )}
         </Card>
 
@@ -268,14 +268,14 @@ export function PackingListPage() {
             <LucideIcon name="cloud-sun" size={20} className="text-[var(--text-secondary)] opacity-50" />
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-[var(--blue-faint)]">Trip Forecast</p>
-              <p className="text-[13px] text-[var(--text-secondary)]">Forecast available closer to your trip.</p>
+              <p className="text-[12px] text-[var(--text-secondary)]">Forecast available closer to your trip.</p>
             </div>
           </Card>
         )}
         {weatherLoading && !weather && !weatherOutOfRange && (
           <Card className="flex items-center gap-3">
             <Loader2 size={16} className="animate-spin text-[var(--lavender)]" />
-            <span className="text-[13px] text-[var(--text-secondary)]">Loading forecast...</span>
+            <span className="text-[12px] text-[var(--text-secondary)]">Loading forecast...</span>
           </Card>
         )}
 
@@ -334,7 +334,7 @@ export function PackingListPage() {
                   <LucideIcon name={iconName} size={13} className={catComplete ? 'text-[var(--salmon)]' : 'text-[var(--lavender)]'} />
                 </div>
                 <button onClick={() => toggleCategory(category)} className="flex-1 flex items-center gap-1">
-                  <span className={`text-[13px] font-semibold uppercase tracking-[0.5px] ${catComplete ? 'text-[var(--salmon)]' : 'text-[var(--text-secondary)]'}`}>
+                  <span className={`text-[12px] font-semibold uppercase tracking-[0.5px] ${catComplete ? 'text-[var(--salmon)]' : 'text-[var(--text-secondary)]'}`}>
                     {category}
                   </span>
                   <span className="flex-1" />
@@ -358,7 +358,7 @@ export function PackingListPage() {
               {isExpanded && (
                 <Card noPadding className="mt-2 overflow-hidden">
                   {catItems.length === 0 ? (
-                    <p className="text-[13px] text-[var(--text-secondary)] p-4">No items here yet — tap + to add some</p>
+                    <p className="text-[12px] text-[var(--text-secondary)] p-4">No items here yet — tap + to add some</p>
                   ) : (
                     catItems.map((item, i) => (
                       <div key={item.id}>
@@ -382,7 +382,7 @@ export function PackingListPage() {
         {/* Add another item */}
         <button
           onClick={() => { setAddAsMustPack(false); setAddCategory(''); setShowAddSheet(true); }}
-          className="flex items-center justify-center gap-2 py-5 rounded-[20px] text-[15px] font-semibold text-[var(--lavender)]"
+          className="flex items-center justify-center gap-2 py-5 rounded-[20px] text-[14px] font-semibold text-[var(--lavender)]"
           style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 8%, transparent)' }}
         >
           <PlusCircle size={16} /> Add another item
