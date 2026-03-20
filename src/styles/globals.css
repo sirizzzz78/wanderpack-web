@@ -58,7 +58,7 @@
   --touch-min: 44px;
   --row-height: 44px;
   --section-gap: 28px;
-  --page-px: clamp(20px, 4vw, 32px);
+  --page-px: clamp(24px, 5vw, 36px);
   --nav-height: 44px;
   --radius-card: 14px;
   --radius-button: 22px;

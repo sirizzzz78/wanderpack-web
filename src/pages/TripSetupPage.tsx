@@ -214,7 +214,7 @@ export function TripSetupPage() {
       {/* Step content */}
       <div className="flex-1 overflow-y-auto">
         {step === 1 && (
-          <div style={{ padding: '1.5rem var(--page-px) 0' }}>
+          <div style={{ padding: '1.5rem var(--page-px) 1.5rem' }}>
             <h2 className="font-semibold text-[var(--text-primary)]" style={{ fontSize: 'var(--text-page-title)' }}>Where are you headed?</h2>
             <p className="text-[var(--text-secondary)]" style={{ fontSize: 'var(--text-body-sm)', marginTop: 'var(--step-heading-gap)' }}>Enter your destination city or country.</p>
             <Card className="flex items-center gap-3 p-4" style={{ marginTop: 'var(--step-content-gap)' }}>
@@ -238,7 +238,7 @@ export function TripSetupPage() {
         )}
 
         {step === 2 && (
-          <div style={{ padding: '1.5rem var(--page-px) 0' }}>
+          <div style={{ padding: '1.5rem var(--page-px) 1.5rem' }}>
             <h2 className="font-semibold text-[var(--text-primary)]" style={{ fontSize: 'var(--text-page-title)' }}>Tell us about your trip</h2>
             <p className="text-[var(--text-secondary)]" style={{ fontSize: 'var(--text-body-sm)', marginTop: 'var(--step-heading-gap)' }}>We'll tailor your packing list to match.</p>
 
@@ -289,7 +289,7 @@ export function TripSetupPage() {
         )}
 
         {step === 3 && (
-          <div style={{ padding: '1.5rem var(--page-px) 0' }}>
+          <div style={{ padding: '1.5rem var(--page-px) 1.5rem' }}>
             <h2 className="font-semibold text-[var(--text-primary)]" style={{ fontSize: 'var(--text-page-title)' }}>When are you traveling?</h2>
             <p className="text-[var(--text-secondary)]" style={{ fontSize: 'var(--text-body-sm)', marginTop: 'var(--step-heading-gap)' }}>Pick your departure and return dates.</p>
 
@@ -340,7 +340,7 @@ export function TripSetupPage() {
         )}
 
         {step === 4 && (
-          <div style={{ padding: '1.5rem var(--page-px) 0' }}>
+          <div style={{ padding: '1.5rem var(--page-px) 1.5rem' }}>
             <h2 className="font-semibold text-[var(--text-primary)]" style={{ fontSize: 'var(--text-page-title)' }}>Will you do laundry?</h2>
             <p className="text-[var(--text-secondary)]" style={{ fontSize: 'var(--text-body-sm)', marginTop: 'var(--step-heading-gap)' }}>Pick the days you'll have access to laundry.</p>
 
@@ -391,7 +391,7 @@ export function TripSetupPage() {
         )}
 
         {step === 5 && (
-          <div style={{ padding: '1.5rem var(--page-px) 0' }}>
+          <div style={{ padding: '1.5rem var(--page-px) 1.5rem' }}>
             <h2 className="font-semibold text-[var(--text-primary)]" style={{ fontSize: 'var(--text-page-title)' }}>How many days per outfit?</h2>
             <p className="text-[var(--text-secondary)]" style={{ fontSize: 'var(--text-body-sm)', marginTop: 'var(--step-heading-gap)' }}>Pack fewer outfits the more days you wear each one.</p>
 

@@ -85,7 +85,7 @@ export function HomePage() {
       </div>
 
       <div className="relative z-10 pb-24">
-        <div style={{ padding: '1.5rem var(--page-px) 0' }}>
+        <div style={{ padding: '1.5rem var(--page-px)' }}>
           {/* Header */}
           <div className="flex items-center justify-between mb-3">
             <h1 className="font-semibold text-[var(--text-primary)] tracking-tight" style={{ fontSize: 'var(--text-page-title)' }}>
