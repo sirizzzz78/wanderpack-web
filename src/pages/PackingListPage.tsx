@@ -1,0 +1,463 @@
+import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import {
+  ChevronLeft, Share, Pencil, Plus, PlusCircle, ChevronDown,
+  CheckCircle2, Circle, Star, Trash2, AlertCircle, BadgeCheck,
+  Search, XCircle, Loader2,
+} from 'lucide-react';
+import { useTrip, usePackingItems, togglePacked, deletePackingItem, updatePackingItem, getTripDays, getFormattedDateRange } from '../db/hooks';
+import { Card } from '../components/ui/Card';
+import { ProgressBar } from '../components/ui/ProgressBar';
+import { SearchBar } from '../components/ui/SearchBar';
+import { LucideIcon } from '../components/ui/LucideIcon';
+import { Modal } from '../components/ui/Modal';
+import { ConfirmDialog } from '../components/ui/ConfirmDialog';
+import { AddItemSheet } from '../components/sheets/AddItemSheet';
+import { EditItemSheet } from '../components/sheets/EditItemSheet';
+import { EditTripSheet } from '../components/sheets/EditTripSheet';
+import { WeatherCardComponent } from '../components/packingList/WeatherCard';
+import { CATEGORY_ICONS } from '../lib/constants';
+import { isRestricted } from '../lib/carryOnRules';
+import { isBeforeToday } from '../lib/dateUtils';
+import { fetchWeather, type WeatherSummary } from '../lib/weatherService';
+import { getUnusedNames } from '../db/hooks';
+import type { PackingItem } from '../db/models';
+
+export function PackingListPage() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const trip = useTrip(id);
+  const items = usePackingItems(id);
+
+  const [searchText, setSearchText] = useState('');
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const [initialized, setInitialized] = useState(false);
+  const [weather, setWeather] = useState<WeatherSummary | null>(null);
+  const [weatherLoading, setWeatherLoading] = useState(true);
+  const [weatherOutOfRange, setWeatherOutOfRange] = useState(false);
+
+  // Modals
+  const [showAddSheet, setShowAddSheet] = useState(false);
+  const [addCategory, setAddCategory] = useState('');
+  const [addAsMustPack, setAddAsMustPack] = useState(false);
+  const [editingItem, setEditingItem] = useState<PackingItem | null>(null);
+  const [showEditTrip, setShowEditTrip] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  const unusedNames = useMemo(() => getUnusedNames(), [items]);
+
+  const isFlight = trip?.transportation.includes('Flight') ?? false;
+  const isPast = trip ? isBeforeToday(trip.endDate) : false;
+
+  const filteredItems = useMemo(() => {
+    if (!searchText) return items;
+    const q = searchText.toLowerCase();
+    return items.filter(i => i.name.toLowerCase().includes(q) || i.category.toLowerCase().includes(q));
+  }, [items, searchText]);
+
+  const mustPackItems = useMemo(() => filteredItems.filter(i => i.isMustPack), [filteredItems]);
+
+  const groupedItems = useMemo(() => {
+    const nonMustPack = filteredItems.filter(i => !i.isMustPack);
+    const dict = new Map<string, PackingItem[]>();
+    for (const item of nonMustPack) {
+      const arr = dict.get(item.category) || [];
+      arr.push(item);
+      dict.set(item.category, arr);
+    }
+    const baseOrder = ['Essentials', 'Clothing', 'Toiletries', 'Health'];
+    return [...dict.entries()].sort(([a], [b]) => {
+      const ai = baseOrder.indexOf(a);
+      const bi = baseOrder.indexOf(b);
+      if (ai >= 0 && bi >= 0) return ai - bi;
+      if (ai >= 0) return -1;
+      if (bi >= 0) return 1;
+      return a.localeCompare(b);
+    });
+  }, [filteredItems]);
+
+  const allCategories = useMemo(() => [...new Set(items.map(i => i.category))].sort(), [items]);
+  const packed = items.filter(i => i.isPacked).length;
+  const total = items.length;
+  const progress = total > 0 ? packed / total : 0;
+  const allPacked = packed === total && total > 0;
+
+  const restrictedItems = useMemo(() =>
+    isFlight ? items.filter(i => isRestricted(i.name)) : [],
+    [items, isFlight]
+  );
+
+  // Auto-expand incomplete categories on first load
+  useEffect(() => {
+    if (initialized || groupedItems.length === 0) return;
+    const expanded = new Set<string>();
+    for (const [cat, catItems] of groupedItems) {
+      if (!catItems.every(i => i.isPacked)) expanded.add(cat);
+    }
+    setExpandedCategories(expanded);
+    setInitialized(true);
+  }, [groupedItems, initialized]);
+
+  // Expand all on search
+  useEffect(() => {
+    if (searchText) setExpandedCategories(new Set(groupedItems.map(([cat]) => cat)));
+  }, [searchText]);
+
+  // Load weather
+  useEffect(() => {
+    if (!trip) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const w = await fetchWeather(trip.destination, trip.startDate, trip.endDate);
+        if (!cancelled) { setWeather(w); setWeatherLoading(false); }
+      } catch (e: any) {
+        if (!cancelled) {
+          if (e?.message === 'outsideForecastWindow') setWeatherOutOfRange(true);
+          setWeatherLoading(false);
+        }
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [trip?.destination, trip?.startDate, trip?.endDate]);
+
+  const toggleCategory = (cat: string) => {
+    setExpandedCategories(prev => {
+      const next = new Set(prev);
+      next.has(cat) ? next.delete(cat) : next.add(cat);
+      return next;
+    });
+  };
+
+  const handleShare = useCallback(() => {
+    if (!trip) return;
+    let lines = [`Packing List: ${trip.destination}`, ''];
+    const mp = items.filter(i => i.isMustPack);
+    if (mp.length > 0) {
+      lines.push('MUST PACK');
+      mp.forEach(i => {
+        const check = i.isPacked ? '[x]' : '[ ]';
+        const qty = i.quantity > 1 ? ` (x${i.quantity})` : '';
+        lines.push(`  ${check} ${i.name}${qty}`);
+      });
+      lines.push('');
+    }
+    for (const [cat, catItems] of groupedItems) {
+      lines.push(cat.toUpperCase());
+      catItems.forEach(i => {
+        const check = i.isPacked ? '[x]' : '[ ]';
+        const qty = i.quantity > 1 ? ` (x${i.quantity})` : '';
+        lines.push(`  ${check} ${i.name}${qty}`);
+      });
+      lines.push('');
+    }
+    const text = lines.join('\n');
+    if (navigator.share) {
+      navigator.share({ text }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(text);
+    }
+  }, [trip, items, groupedItems]);
+
+  if (!trip) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center bg-[var(--background)]">
+        <Loader2 size={24} className="animate-spin text-[var(--lavender)]" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-dvh bg-[var(--background)]">
+      {/* Nav bar */}
+      <div className="sticky top-0 z-20 bg-[var(--background)] px-5 pt-4 pb-2 flex items-center justify-between">
+        <button onClick={() => navigate('/')} className="p-1">
+          <ChevronLeft size={24} className="text-[var(--lavender)]" />
+        </button>
+        <h1 className="text-[17px] font-semibold text-[var(--text-primary)] truncate mx-3">
+          {trip.destination}
+        </h1>
+        <div className="flex items-center gap-3">
+          <button onClick={handleShare}><Share size={18} className="text-[var(--lavender)]" /></button>
+          <button onClick={() => setShowEditTrip(true)}><Pencil size={18} className="text-[var(--lavender)]" /></button>
+        </div>
+      </div>
+
+      <div className="px-5 pb-12 flex flex-col gap-3">
+        {/* Archive banner */}
+        {isPast && (
+          <div className="flex items-center gap-3 p-4 rounded-[14px]"
+            style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--lavender) 30%, transparent)' }}>
+            <BadgeCheck size={20} className="text-[var(--lavender)] shrink-0" />
+            <div>
+              <p className="text-[14px] font-semibold text-[var(--text-primary)]">Trip completed</p>
+              <p className="text-[12px] text-[var(--text-secondary)]">{packed} of {total} items packed · {getTripDays(trip.startDate, trip.endDate)} days</p>
+            </div>
+          </div>
+        )}
+
+        {/* Carry-on banner */}
+        {restrictedItems.length > 0 && (
+          <div className="flex items-center gap-3 p-4 rounded-[14px]"
+            style={{ backgroundColor: 'color-mix(in srgb, var(--salmon) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--salmon) 25%, transparent)' }}>
+            <LucideIcon name="plane" size={16} className="text-[var(--salmon)] shrink-0" />
+            <div>
+              <p className="text-[14px] font-semibold text-[var(--text-primary)]">
+                {restrictedItems.length} item{restrictedItems.length !== 1 ? 's' : ''} must go in your check-in bag
+              </p>
+              <p className="text-[12px] text-[var(--text-secondary)]">TSA restricts these from carry-on luggage.</p>
+            </div>
+          </div>
+        )}
+
+        {/* Progress card */}
+        <Card className={`p-4 ${allPacked ? 'border-[var(--salmon)]' : ''}`}
+          bg={allPacked ? 'color-mix(in srgb, var(--salmon) 8%, var(--surface))' : undefined}>
+          <div className="flex items-center justify-between mb-2.5">
+            <span className={`text-[15px] font-medium ${allPacked ? 'text-[var(--salmon)]' : 'text-[var(--text-primary)]'}`}>
+              {packed} of {total} packed
+            </span>
+            <span className={`text-[15px] font-bold ${allPacked ? 'text-[var(--salmon)]' : 'text-[var(--lavender)]'}`}>
+              {Math.round(progress * 100)}%
+            </span>
+          </div>
+          <ProgressBar progress={progress} complete={allPacked} />
+          {allPacked && (
+            <p className="text-[13px] font-medium text-[var(--salmon)] mt-2">All packed — you're ready to go!</p>
+          )}
+        </Card>
+
+        {/* Weather */}
+        {weather && <WeatherCardComponent summary={weather} />}
+        {weatherOutOfRange && (
+          <Card className="p-4 flex items-center gap-3">
+            <LucideIcon name="cloud-sun" size={20} className="text-[var(--text-secondary)] opacity-50" />
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-[var(--blue-faint)]">Trip Forecast</p>
+              <p className="text-[13px] text-[var(--text-secondary)]">Forecast available closer to your trip.</p>
+            </div>
+          </Card>
+        )}
+        {weatherLoading && !weather && !weatherOutOfRange && (
+          <Card className="p-4 flex items-center gap-3">
+            <Loader2 size={16} className="animate-spin text-[var(--lavender)]" />
+            <span className="text-[13px] text-[var(--text-secondary)]">Loading forecast...</span>
+          </Card>
+        )}
+
+        {/* Search */}
+        {(items.length > 10 || searchText) && (
+          <SearchBar value={searchText} onChange={setSearchText} />
+        )}
+
+        {/* Must Pack */}
+        {(mustPackItems.length > 0 || true) && (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-semibold uppercase tracking-[1.5px] text-[var(--blue-faint)] flex items-center gap-1">
+                <Star size={11} /> Must Pack
+              </span>
+              <button
+                onClick={() => { setAddAsMustPack(true); setAddCategory(''); setShowAddSheet(true); }}
+                className="w-7 h-7 flex items-center justify-center rounded-full"
+                style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 12%, transparent)' }}
+              >
+                <Plus size={13} className="text-[var(--lavender)]" />
+              </button>
+            </div>
+            {mustPackItems.length > 0 && (
+              <Card className="overflow-hidden">
+                {mustPackItems.map((item, i) => (
+                  <div key={item.id}>
+                    <ItemRow
+                      item={item}
+                      isFlight={isFlight}
+                      unusedNames={unusedNames}
+                      onEdit={() => setEditingItem(item)}
+                      onDelete={() => setDeleteTarget(item.id)}
+                      isMustPack
+                    />
+                    {i < mustPackItems.length - 1 && <div className="border-b border-[var(--border)] ml-12" />}
+                  </div>
+                ))}
+              </Card>
+            )}
+          </div>
+        )}
+
+        {/* Category sections */}
+        {groupedItems.map(([category, catItems]) => {
+          const catPacked = catItems.filter(i => i.isPacked).length;
+          const catTotal = catItems.length;
+          const catComplete = catPacked === catTotal && catTotal > 0;
+          const isExpanded = expandedCategories.has(category);
+          const catProgress = catTotal > 0 ? catPacked / catTotal : 0;
+          const iconName = CATEGORY_ICONS[category] || 'tag';
+
+          return (
+            <div key={category}>
+              <div className="flex items-center gap-2 mb-1.5">
+                <div className={`w-7 h-7 flex items-center justify-center rounded-[9px] ${catComplete ? 'bg-[var(--salmon-tint)]' : 'bg-[var(--blue-tint)]'}`}>
+                  <LucideIcon name={iconName} size={13} className={catComplete ? 'text-[var(--salmon)]' : 'text-[var(--lavender)]'} />
+                </div>
+                <button onClick={() => toggleCategory(category)} className="flex-1 flex items-center gap-1">
+                  <span className={`text-[13px] font-semibold uppercase tracking-[0.5px] ${catComplete ? 'text-[var(--salmon)]' : 'text-[var(--text-secondary)]'}`}>
+                    {category}
+                  </span>
+                  <span className="flex-1" />
+                  <span className={`text-[12px] font-medium ${catComplete ? 'text-[var(--salmon)]' : 'text-[var(--text-secondary)]'}`}>
+                    {catPacked}/{catTotal}
+                  </span>
+                  <ChevronDown size={11} className={`text-[var(--text-secondary)] transition-transform ${isExpanded ? '' : '-rotate-90'}`} />
+                </button>
+                <button
+                  onClick={async () => {
+                    const allPackedState = catItems.every(i => i.isPacked);
+                    for (const item of catItems) {
+                      await togglePacked(item.id, !allPackedState);
+                    }
+                  }}
+                  className="w-8 h-8 flex items-center justify-center"
+                >
+                  {catItems.every(i => i.isPacked)
+                    ? <CheckCircle2 size={15} className="text-[var(--lavender)]" />
+                    : <Circle size={15} className="text-[var(--text-secondary)]" />}
+                </button>
+                <button
+                  onClick={() => { setAddAsMustPack(false); setAddCategory(category); setShowAddSheet(true); }}
+                  className="w-7 h-7 flex items-center justify-center rounded-full"
+                  style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 12%, transparent)' }}
+                >
+                  <Plus size={13} className="text-[var(--lavender)]" />
+                </button>
+              </div>
+
+              <ProgressBar progress={catProgress} complete={catComplete} />
+
+              {isExpanded && (
+                <Card className="mt-2 overflow-hidden">
+                  {catItems.length === 0 ? (
+                    <p className="text-[13px] text-[var(--text-secondary)] p-4">No items here yet — tap + to add some</p>
+                  ) : (
+                    catItems.map((item, i) => (
+                      <div key={item.id}>
+                        <ItemRow
+                          item={item}
+                          isFlight={isFlight}
+                          unusedNames={unusedNames}
+                          onEdit={() => setEditingItem(item)}
+                          onDelete={() => setDeleteTarget(item.id)}
+                        />
+                        {i < catItems.length - 1 && <div className="border-b border-[var(--border)] ml-12" />}
+                      </div>
+                    ))
+                  )}
+                </Card>
+              )}
+            </div>
+          );
+        })}
+
+        {/* Add another item */}
+        <button
+          onClick={() => { setAddAsMustPack(false); setAddCategory(''); setShowAddSheet(true); }}
+          className="flex items-center justify-center gap-2 py-3.5 rounded-[20px] text-[15px] font-medium text-[var(--lavender)]"
+          style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 8%, transparent)' }}
+        >
+          <PlusCircle size={16} /> Add another item
+        </button>
+      </div>
+
+      {/* Modals */}
+      <Modal open={showAddSheet} onClose={() => setShowAddSheet(false)} title={addAsMustPack ? 'Add Must-Pack Item' : 'Add Item'}>
+        <AddItemSheet
+          tripId={id!}
+          existingCategories={allCategories}
+          preselectedCategory={addCategory}
+          isMustPack={addAsMustPack}
+          onClose={() => setShowAddSheet(false)}
+        />
+      </Modal>
+
+      {editingItem && (
+        <Modal open={true} onClose={() => setEditingItem(null)} title="Edit Item">
+          <EditItemSheet
+            item={editingItem}
+            existingCategories={allCategories}
+            onClose={() => setEditingItem(null)}
+          />
+        </Modal>
+      )}
+
+      <Modal open={showEditTrip} onClose={() => setShowEditTrip(false)} title="Edit Trip">
+        <EditTripSheet trip={trip} onClose={() => setShowEditTrip(false)} />
+      </Modal>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete Item?"
+        message="This item will be removed from your packing list."
+        onConfirm={async () => {
+          if (deleteTarget) await deletePackingItem(deleteTarget);
+          setDeleteTarget(null);
+        }}
+        onCancel={() => setDeleteTarget(null)}
+        confirmLabel="Delete"
+      />
+    </div>
+  );
+}
+
+// ── Item Row ──
+
+function ItemRow({
+  item, isFlight, unusedNames, onEdit, onDelete, isMustPack,
+}: {
+  item: PackingItem;
+  isFlight: boolean;
+  unusedNames: Set<string>;
+  onEdit: () => void;
+  onDelete: () => void;
+  isMustPack?: boolean;
+}) {
+  const restricted = isFlight && isRestricted(item.name);
+  const unused = unusedNames.has(item.name.toLowerCase());
+
+  return (
+    <div className="flex items-center gap-3 px-4 py-2.5">
+      <button onClick={() => togglePacked(item.id, !item.isPacked)}>
+        {item.isPacked
+          ? <CheckCircle2 size={22} className="text-[var(--salmon)]" />
+          : <Circle size={22} className="text-[var(--lavender)] opacity-40" />}
+      </button>
+      <div className="flex-1 min-w-0">
+        <p className={`text-[16px] font-medium ${item.isPacked ? 'text-[var(--text-secondary)] line-through' : 'text-[var(--text-primary)]'}`}>
+          {item.name}
+        </p>
+        {item.quantity > 1 && (
+          <p className="text-[12px] text-[var(--text-secondary)]">&times;{item.quantity}</p>
+        )}
+        {unused && (
+          <p className="text-[12px] text-[var(--salmon)]">Not used last trip</p>
+        )}
+        {restricted && (
+          <p className="text-[11px] font-medium text-[var(--salmon)] flex items-center gap-1">
+            <LucideIcon name="plane" size={11} /> Check-in bag only
+          </p>
+        )}
+      </div>
+      {isMustPack && (
+        <AlertCircle size={14} className="text-[var(--lavender)] shrink-0" />
+      )}
+      {!isMustPack && item.isMustPack && (
+        <Star size={11} className="text-[var(--lavender)] shrink-0" fill="var(--lavender)" />
+      )}
+      <button onClick={onEdit} className="p-1.5 rounded-full hover:bg-[var(--border)]">
+        <Pencil size={14} className="text-[var(--text-secondary)]" />
+      </button>
+      <button onClick={onDelete} className="p-1.5 rounded-full hover:bg-[var(--border)]">
+        <Trash2 size={14} className="text-[var(--destructive)]" />
+      </button>
+    </div>
+  );
+}

@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+/* Quicksand Font Faces */
+@font-face {
+  font-family: 'Quicksand';
+  src: url('/readili-web/fonts/Quicksand-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Quicksand';
+  src: url('/readili-web/fonts/Quicksand-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Quicksand';
+  src: url('/readili-web/fonts/Quicksand-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Quicksand';
+  src: url('/readili-web/fonts/Quicksand-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-display: swap;
+}
+
+/* CSS Custom Properties — Light Mode */
+:root {
+  --background: #FAFAFA;
+  --surface: #FFFFFF;
+  --surface-past: #F0F4F8;
+  --text-primary: #4A6880;
+  --text-secondary: #8A9BB5;
+  --button-disabled: #D8E4F0;
+  --border: #D8E4F0;
+  --lavender: #7A9BB5;
+  --salmon: #F0A888;
+  --destructive: #E07060;
+  --blue-tint: #E0E8F4;
+  --blue-faint: #A8B8C8;
+  --blue-pale: #C0CCD8;
+  --blue-dark: #4A6880;
+  --salmon-tint: #FAE8E0;
+
+  --font-family: 'Quicksand', system-ui, sans-serif;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1A1F24;
+    --surface: #242A30;
+    --surface-past: #1E2328;
+    --text-primary: #D0DCE8;
+    --text-secondary: #8A9BB5;
+    --button-disabled: #3A4450;
+    --border: #3A4450;
+  }
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text-primary);
+  min-height: 100dvh;
+  overscroll-behavior: none;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+/* Smooth scroll-snap for onboarding */
+.scroll-snap-x {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+.scroll-snap-x > * {
+  scroll-snap-align: center;
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Modal backdrop */
+.modal-backdrop {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Transitions */
+.transition-slide-up {
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* PWA safe area */
+.safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom), 16px);
+}
+
+/* Input styling */
+input, textarea {
+  font-family: var(--font-family);
+}
+
+input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+/* Prevent iOS zoom on inputs */
+@supports (-webkit-touch-callout: none) {
+  input[type="text"],
+  input[type="search"],
+  textarea {
+    font-size: 16px;
+  }
+}

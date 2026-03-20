@@ -1,0 +1,136 @@
+import { useState, useEffect } from 'react';
+import { PlusCircle, XCircle } from 'lucide-react';
+import { Card } from '../ui/Card';
+import { Button } from '../ui/Button';
+import { useTrip, usePackingItems, updateTrip, removeLearnedItems, markUnused, learnItem } from '../../db/hooks';
+import { CATEGORY_OPTIONS } from '../../lib/constants';
+
+interface PostTripFeedbackSheetProps {
+  tripId: string;
+  onClose: () => void;
+}
+
+export function PostTripFeedbackSheet({ tripId, onClose }: PostTripFeedbackSheetProps) {
+  const trip = useTrip(tripId);
+  const items = usePackingItems(tripId);
+
+  const [unpackedSelections, setUnpackedSelections] = useState<Set<string>>(new Set());
+  const [wishlistItems, setWishlistItems] = useState<{ name: string; category: string }[]>([]);
+  const [newName, setNewName] = useState('');
+  const [newCategory, setNewCategory] = useState('Essentials');
+
+  useEffect(() => {
+    if (trip?.feedbackUnpacked) setUnpackedSelections(new Set(trip.feedbackUnpacked));
+    if (trip?.feedbackWishlist) {
+      const names = trip.feedbackWishlist.split(',').map(s => s.trim()).filter(Boolean);
+      setWishlistItems(names.map(n => ({ name: n, category: 'Essentials' })));
+    }
+  }, [trip?.id]);
+
+  if (!trip) return null;
+
+  const packedNames = items.filter(i => i.isPacked).map(i => i.name).sort();
+
+  const toggleUnpacked = (name: string) => {
+    setUnpackedSelections(prev => {
+      const n = new Set(prev);
+      n.has(name) ? n.delete(name) : n.add(name);
+      return n;
+    });
+  };
+
+  const addWishlist = () => {
+    const trimmed = newName.trim();
+    if (!trimmed) return;
+    setWishlistItems(prev => [...prev, { name: trimmed, category: newCategory }]);
+    setNewName('');
+  };
+
+  const handleSave = async () => {
+    await updateTrip(trip.id, {
+      hasSubmittedFeedback: true,
+      feedbackUnpacked: [...unpackedSelections],
+      feedbackWishlist: wishlistItems.map(w => w.name).join(', '),
+    });
+
+    await removeLearnedItems([...unpackedSelections]);
+    markUnused([...unpackedSelections]);
+
+    for (const item of wishlistItems) {
+      await learnItem({ name: item.name, category: item.category, quantity: 1, isMustPack: false });
+    }
+
+    onClose();
+  };
+
+  return (
+    <div className="px-5 pb-8 max-h-[70dvh] overflow-y-auto">
+      <p className="text-[15px] text-[var(--text-secondary)] mb-6">Your feedback helps improve future packing lists.</p>
+
+      {/* Unpacked items */}
+      {packedNames.length > 0 && (
+        <div className="mb-6">
+          <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-[var(--blue-faint)] mb-2">
+            What did you pack but not use?
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {packedNames.map(name => {
+              const selected = unpackedSelections.has(name);
+              return (
+                <button
+                  key={name}
+                  onClick={() => toggleUnpacked(name)}
+                  className={`px-3 py-1.5 rounded-[12px] text-[13px] font-medium border border-[var(--border)] transition-colors ${
+                    selected ? 'bg-[var(--lavender)] text-white border-transparent' : 'bg-[var(--surface)] text-[var(--text-primary)]'
+                  }`}
+                >
+                  {name}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Wishlist */}
+      <div className="mb-6">
+        <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-[var(--blue-faint)] mb-2">
+          What do you wish you'd brought?
+        </p>
+        <Card className="p-4 flex items-center gap-2">
+          <input
+            type="text"
+            value={newName}
+            onChange={e => setNewName(e.target.value)}
+            placeholder="Item name"
+            className="flex-1 bg-transparent text-[15px] text-[var(--text-primary)] outline-none min-w-0"
+          />
+          <select
+            value={newCategory}
+            onChange={e => setNewCategory(e.target.value)}
+            className="bg-transparent text-[13px] text-[var(--lavender)] outline-none"
+          >
+            {CATEGORY_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <button onClick={addWishlist} disabled={!newName.trim()}>
+            <PlusCircle size={24} className={newName.trim() ? 'text-[var(--lavender)]' : 'text-[var(--border)]'} />
+          </button>
+        </Card>
+        {wishlistItems.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {wishlistItems.map((item, i) => (
+              <span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-[12px] text-[13px] font-medium bg-[var(--lavender)] text-white">
+                {item.name} <span className="opacity-70">· {item.category}</span>
+                <button onClick={() => setWishlistItems(prev => prev.filter((_, j) => j !== i))}>
+                  <XCircle size={14} className="text-white opacity-70" />
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <Button onClick={handleSave}>Save Feedback</Button>
+    </div>
+  );
+}

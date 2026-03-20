@@ -1,0 +1,201 @@
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Brain, Leaf, ChevronRight } from 'lucide-react';
+import { useTrips, usePackingItems, deleteTrip, duplicateTrip } from '../db/hooks';
+import { usePackingItemsForTrips } from '../hooks/usePackingItemsForTrips';
+import { TripCard } from '../components/home/TripCard';
+import { MountainBackground } from '../components/home/MountainBackground';
+import { ConfirmDialog } from '../components/ui/ConfirmDialog';
+import { Modal } from '../components/ui/Modal';
+import { LearnedItemsSheet } from '../components/sheets/LearnedItemsSheet';
+import { PostTripFeedbackSheet } from '../components/sheets/PostTripFeedbackSheet';
+import { isBeforeToday } from '../lib/dateUtils';
+import { LucideIcon } from '../components/ui/LucideIcon';
+import { Map } from 'lucide-react';
+
+export function HomePage() {
+  const navigate = useNavigate();
+  const trips = useTrips();
+  const allItems = usePackingItemsForTrips(trips);
+
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [showLearned, setShowLearned] = useState(false);
+  const [feedbackTripId, setFeedbackTripId] = useState<string | null>(null);
+
+  const today = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
+
+  const upcomingTrips = useMemo(() =>
+    trips
+      .filter(t => new Date(t.startDate) >= today)
+      .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()),
+    [trips, today]
+  );
+
+  const pastTrips = useMemo(() =>
+    trips
+      .filter(t => new Date(t.startDate) < today)
+      .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()),
+    [trips, today]
+  );
+
+  const feedbackTrip = useMemo(() =>
+    pastTrips.find(t => isBeforeToday(t.endDate) && !t.hasSubmittedFeedback),
+    [pastTrips]
+  );
+
+  const handleDuplicate = async (tripId: string) => {
+    const source = trips.find(t => t.id === tripId);
+    if (!source) return;
+    await duplicateTrip(source);
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    await deleteTrip(deleteTarget);
+    setDeleteTarget(null);
+  };
+
+  const deleteTargetTrip = trips.find(t => t.id === deleteTarget);
+
+  return (
+    <div className="min-h-dvh bg-[var(--background)] relative">
+      {/* Mountain background at bottom */}
+      <div className="fixed bottom-0 left-0 right-0 pointer-events-none">
+        <MountainBackground />
+      </div>
+
+      <div className="relative z-10 pb-24">
+        <div className="px-5 pt-6">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-3">
+            <h1 className="text-[28px] font-semibold text-[var(--text-primary)] tracking-tight">
+              My Trips
+            </h1>
+            <button
+              onClick={() => setShowLearned(true)}
+              className="w-9 h-9 flex items-center justify-center rounded-full"
+              style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 12%, transparent)' }}
+            >
+              <Brain size={18} className="text-[var(--lavender)]" />
+            </button>
+          </div>
+
+          {/* Feedback nudge */}
+          {feedbackTrip && (
+            <button
+              onClick={() => setFeedbackTripId(feedbackTrip.id)}
+              className="w-full mb-3 flex items-center gap-3.5 p-4 rounded-[14px] text-left"
+              style={{
+                backgroundColor: 'color-mix(in srgb, var(--salmon) 8%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--salmon) 30%, transparent)',
+              }}
+            >
+              <Leaf size={24} className="text-[var(--salmon)] shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[14px] font-semibold text-[var(--text-primary)]">
+                  How was {feedbackTrip.destination}?
+                </p>
+                <p className="text-[12px] text-[var(--text-secondary)]">
+                  Leave feedback to improve future lists
+                </p>
+              </div>
+              <ChevronRight size={12} className="text-[var(--text-secondary)] shrink-0" />
+            </button>
+          )}
+
+          {/* Empty state */}
+          {trips.length === 0 && (
+            <div className="flex flex-col items-center py-16 gap-5">
+              <Map size={56} className="text-[var(--lavender)] opacity-60" />
+              <div className="text-center">
+                <h2 className="text-[22px] font-semibold text-[var(--text-primary)] tracking-tight">
+                  The trail starts here
+                </h2>
+                <p className="text-[15px] text-[var(--text-secondary)] mt-2">
+                  Tap + to plan your first trip. We'll handle the packing list.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Upcoming */}
+          {upcomingTrips.length > 0 && (
+            <div className="mb-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-[var(--blue-faint)] mb-3">
+                Upcoming
+              </p>
+              <div className="flex flex-col gap-2">
+                {upcomingTrips.map(trip => (
+                  <TripCard
+                    key={trip.id}
+                    trip={trip}
+                    items={allItems[trip.id] ?? []}
+                    isPast={false}
+                    onDuplicate={() => handleDuplicate(trip.id)}
+                    onDelete={() => setDeleteTarget(trip.id)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Past */}
+          {pastTrips.length > 0 && (
+            <div className="mb-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-[var(--blue-faint)] mb-3">
+                Past
+              </p>
+              <div className="flex flex-col gap-2">
+                {pastTrips.map(trip => (
+                  <TripCard
+                    key={trip.id}
+                    trip={trip}
+                    items={allItems[trip.id] ?? []}
+                    isPast={true}
+                    onDuplicate={() => handleDuplicate(trip.id)}
+                    onDelete={() => setDeleteTarget(trip.id)}
+                    onFeedback={() => setFeedbackTripId(trip.id)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* FAB */}
+      <button
+        onClick={() => navigate('/setup')}
+        className="fixed bottom-10 right-6 z-20 w-14 h-14 rounded-full bg-[var(--salmon)] flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+        style={{ boxShadow: '0 4px 12px color-mix(in srgb, var(--salmon) 30%, transparent)' }}
+      >
+        <Plus size={22} className="text-white" strokeWidth={2.5} />
+      </button>
+
+      {/* Delete dialog */}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete Trip?"
+        message={deleteTargetTrip ? `Are you sure you want to delete your trip to ${deleteTargetTrip.destination}? This cannot be undone.` : ''}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
+
+      {/* Learned items */}
+      <Modal open={showLearned} onClose={() => setShowLearned(false)} title="Learned Items">
+        <LearnedItemsSheet onClose={() => setShowLearned(false)} />
+      </Modal>
+
+      {/* Feedback */}
+      {feedbackTripId && (
+        <Modal open={true} onClose={() => setFeedbackTripId(null)} title="Review your packing">
+          <PostTripFeedbackSheet tripId={feedbackTripId} onClose={() => setFeedbackTripId(null)} />
+        </Modal>
+      )}
+    </div>
+  );
+}
