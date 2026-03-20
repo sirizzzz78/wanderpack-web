@@ -177,10 +177,10 @@ export function PackingListPage() {
 
   if (!trip && loadTimeout) {
     return (
-      <div className="min-h-dvh flex flex-col items-center justify-center bg-[var(--background)] px-6 gap-4">
+      <div className="min-h-dvh flex flex-col items-center justify-center bg-[var(--background)] gap-4" style={{ padding: '0 var(--page-px)' }}>
         <AlertCircle size={48} className="text-[var(--text-secondary)] opacity-50" />
-        <h2 className="text-[20px] font-semibold text-[var(--text-primary)]">Trip not found</h2>
-        <p className="text-[15px] text-[var(--text-secondary)] text-center">
+        <h2 className="font-semibold text-[var(--text-primary)]" style={{ fontSize: 'var(--text-section-title)' }}>Trip not found</h2>
+        <p className="text-[var(--text-secondary)] text-center" style={{ fontSize: 'var(--text-body)' }}>
           This trip may have been deleted or the link is invalid.
         </p>
         <button
@@ -204,11 +204,11 @@ export function PackingListPage() {
   return (
     <div className="min-h-dvh bg-[var(--background)]">
       {/* Nav bar */}
-      <div className="sticky top-0 z-20 bg-[var(--background)] px-6 pt-4 pb-2 flex items-center justify-between">
+      <div className="sticky top-0 z-20 bg-[var(--background)] pt-4 pb-2 flex items-center justify-between" style={{ padding: '1rem var(--page-px) 0.5rem' }}>
         <button onClick={() => navigate('/')} aria-label="Back to trips" className="p-2 -ml-2">
           <ChevronLeft size={24} className="text-[var(--lavender)]" />
         </button>
-        <h1 className="text-[17px] font-semibold text-[var(--text-primary)] truncate mx-3">
+        <h1 className="font-semibold text-[var(--text-primary)] truncate mx-3" style={{ fontSize: 'var(--text-card-title)' }}>
           {trip.destination}
         </h1>
         <div className="flex items-center gap-3">
@@ -217,7 +217,7 @@ export function PackingListPage() {
         </div>
       </div>
 
-      <div className="px-6 pb-12 flex flex-col gap-5">
+      <div className="pb-12 flex flex-col gap-5" style={{ padding: '0 var(--page-px) 3rem' }}>
         {/* Archive banner */}
         {isPast && (
           <div className="flex items-center gap-3 p-4 rounded-[14px]"

@@ -85,10 +85,10 @@ export function HomePage() {
       </div>
 
       <div className="relative z-10 pb-24">
-        <div className="px-6 pt-6">
+        <div style={{ padding: '1.5rem var(--page-px) 0' }}>
           {/* Header */}
           <div className="flex items-center justify-between mb-3">
-            <h1 className="text-[28px] font-semibold text-[var(--text-primary)] tracking-tight">
+            <h1 className="font-semibold text-[var(--text-primary)] tracking-tight" style={{ fontSize: 'var(--text-page-title)' }}>
               My Trips
             </h1>
             <button
@@ -141,10 +141,10 @@ export function HomePage() {
             <div className="flex flex-col items-center py-16 gap-5">
               <Map size={56} className="text-[var(--lavender)] opacity-60" />
               <div className="text-center">
-                <h2 className="text-[22px] font-semibold text-[var(--text-primary)] tracking-tight">
+                <h2 className="font-semibold text-[var(--text-primary)] tracking-tight" style={{ fontSize: 'var(--text-section-title)' }}>
                   The trail starts here
                 </h2>
-                <p className="text-[15px] text-[var(--text-secondary)] mt-2">
+                <p className="text-[var(--text-secondary)] mt-2" style={{ fontSize: 'var(--text-body)' }}>
                   Create your first trip and we'll handle the packing list.
                 </p>
               </div>

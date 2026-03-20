@@ -45,18 +45,24 @@
   --blue-dark: #4A6880;
   --salmon-tint: #FAE8E0;
 
-  /* Typography */
+  /* Typography — fluid scaling */
   --font-family: 'Quicksand', system-ui, sans-serif;
+  --text-hero: clamp(28px, 5vw, 36px);
+  --text-page-title: clamp(24px, 4vw, 30px);
+  --text-section-title: clamp(20px, 3.5vw, 24px);
+  --text-card-title: clamp(16px, 2.8vw, 18px);
+  --text-body: clamp(15px, 2.5vw, 17px);
+  --text-body-sm: clamp(13px, 2.2vw, 15px);
 
-  /* iOS HIG layout tokens */
-  --touch-min: 44px;       /* Apple HIG minimum touch target */
-  --row-height: 44px;      /* Standard list row height */
-  --section-gap: 28px;     /* Gap between content sections */
-  --page-px: 20px;         /* Page horizontal padding (16pt iOS + extra for web) */
-  --nav-height: 44px;      /* Navigation bar height */
-  --radius-card: 14px;     /* Card corner radius */
-  --radius-button: 22px;   /* Button corner radius */
-  --radius-chip: 12px;     /* Chip/tag corner radius */
+  /* iOS HIG layout tokens — fluid spacing */
+  --touch-min: 44px;
+  --row-height: 44px;
+  --section-gap: 28px;
+  --page-px: clamp(20px, 4vw, 32px);
+  --nav-height: 44px;
+  --radius-card: 14px;
+  --radius-button: 22px;
+  --radius-chip: 12px;
 }
 
 /* Dark Mode */
@@ -72,7 +78,7 @@
   }
 }
 
-/* App shell — center content on wide screens */
+/* App shell — responsive max-width */
 .app-shell {
   max-width: 480px;
   margin: 0 auto;
@@ -80,11 +86,22 @@
   position: relative;
 }
 
-/* On wider screens, add subtle side borders to the app shell */
 @media (min-width: 481px) {
   .app-shell {
     border-left: 1px solid var(--border);
     border-right: 1px solid var(--border);
+  }
+}
+
+@media (min-width: 640px) {
+  .app-shell {
+    max-width: 560px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app-shell {
+    max-width: 640px;
   }
 }
 
@@ -147,9 +164,7 @@ body {
   padding-bottom: max(env(safe-area-inset-bottom), 16px);
 }
 
-/* iOS HIG: 44px minimum touch target on all interactive elements.
-   This catches buttons that forgot to add padding — the visual size
-   stays the same but the tappable area expands via min-height/width. */
+/* iOS HIG: 44px minimum touch target on all interactive elements. */
 button, a, [role="button"], [role="switch"] {
   min-height: var(--touch-min);
 }
@@ -207,7 +222,7 @@ input::placeholder {
   box-shadow: 0 2px 8px color-mix(in srgb, var(--lavender) 30%, transparent);
 }
 
-/* A4: Modal slide-up animation (moved from inline style) */
+/* Modal slide-up animation */
 @keyframes slide-up {
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
@@ -216,7 +231,16 @@ input::placeholder {
   animation: slide-up 0.3s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-/* A2: Focus-visible styling for keyboard navigation */
+/* Modal center animation for desktop */
+@keyframes fade-scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-fade-scale-in {
+  animation: fade-scale-in 0.2s ease-out;
+}
+
+/* Focus-visible styling for keyboard navigation */
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,

@@ -150,11 +150,11 @@ export function TripSetupPage() {
 
   if (showCompletion) {
     return (
-      <div className="min-h-dvh flex flex-col items-center justify-center bg-[var(--background)] px-6 gap-6">
+      <div className="min-h-dvh flex flex-col items-center justify-center bg-[var(--background)] gap-6" style={{ padding: '0 var(--page-px)' }}>
         <CheckCircle2 size={72} className="text-[var(--salmon)]" />
         <div className="text-center">
-          <h1 className="text-[28px] font-semibold text-[var(--text-primary)] tracking-tight">Ready to roll</h1>
-          <p className="text-[16px] text-[var(--text-secondary)] mt-2">
+          <h1 className="font-semibold text-[var(--text-primary)] tracking-tight" style={{ fontSize: 'var(--text-page-title)' }}>Ready to roll</h1>
+          <p className="text-[var(--text-secondary)] mt-2" style={{ fontSize: 'var(--text-body)' }}>
             Your packing list for {destination} is ready.
           </p>
         </div>
@@ -184,7 +184,7 @@ export function TripSetupPage() {
   return (
     <div className="min-h-dvh flex flex-col bg-[var(--background)]">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 pt-4">
+      <div className="flex items-center justify-between" style={{ padding: '1rem var(--page-px) 0' }}>
         <button
           onClick={handleClose}
           aria-label="Close"
@@ -197,7 +197,7 @@ export function TripSetupPage() {
       </div>
 
       {/* Progress bar + S12: step counter */}
-      <div className="px-6 pt-5 pb-2">
+      <div style={{ padding: '1.25rem var(--page-px) 0.5rem' }}>
         <div className="flex gap-1.5">
           {Array.from({ length: totalSteps }, (_, i) => (
             <div
@@ -214,8 +214,8 @@ export function TripSetupPage() {
       {/* Step content */}
       <div className="flex-1 overflow-y-auto">
         {step === 1 && (
-          <div className="px-6 pt-6">
-            <h2 className="text-[26px] font-semibold text-[var(--text-primary)]">Where are you headed?</h2>
+          <div style={{ padding: '1.5rem var(--page-px) 0' }}>
+            <h2 className="font-semibold text-[var(--text-primary)]" style={{ fontSize: 'var(--text-page-title)' }}>Where are you headed?</h2>
             <p className="text-[15px] text-[var(--text-secondary)] mt-2">Enter your destination city or country.</p>
             <Card className="mt-6 flex items-center gap-3 p-4">
               <MapPin size={18} className="text-[var(--lavender)] shrink-0" />
@@ -238,8 +238,8 @@ export function TripSetupPage() {
         )}
 
         {step === 2 && (
-          <div className="px-6 pt-6">
-            <h2 className="text-[26px] font-semibold text-[var(--text-primary)]">Tell us about your trip</h2>
+          <div style={{ padding: '1.5rem var(--page-px) 0' }}>
+            <h2 className="font-semibold text-[var(--text-primary)]" style={{ fontSize: 'var(--text-page-title)' }}>Tell us about your trip</h2>
             <p className="text-[15px] text-[var(--text-secondary)] mt-2">We'll tailor your packing list to match.</p>
 
             <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-[var(--blue-faint)] mt-6 mb-1">Trip type</p>
@@ -289,8 +289,8 @@ export function TripSetupPage() {
         )}
 
         {step === 3 && (
-          <div className="px-6 pt-6">
-            <h2 className="text-[26px] font-semibold text-[var(--text-primary)]">When are you traveling?</h2>
+          <div style={{ padding: '1.5rem var(--page-px) 0' }}>
+            <h2 className="font-semibold text-[var(--text-primary)]" style={{ fontSize: 'var(--text-page-title)' }}>When are you traveling?</h2>
             <p className="text-[15px] text-[var(--text-secondary)] mt-2">Pick your departure and return dates.</p>
 
             <div className="flex flex-col gap-3 mt-6">
@@ -340,8 +340,8 @@ export function TripSetupPage() {
         )}
 
         {step === 4 && (
-          <div className="px-6 pt-6">
-            <h2 className="text-[26px] font-semibold text-[var(--text-primary)]">Will you do laundry?</h2>
+          <div style={{ padding: '1.5rem var(--page-px) 0' }}>
+            <h2 className="font-semibold text-[var(--text-primary)]" style={{ fontSize: 'var(--text-page-title)' }}>Will you do laundry?</h2>
             <p className="text-[15px] text-[var(--text-secondary)] mt-2">Pick the days you'll have access to laundry.</p>
 
             <Card className="mt-6 p-4">
@@ -391,8 +391,8 @@ export function TripSetupPage() {
         )}
 
         {step === 5 && (
-          <div className="px-6 pt-6">
-            <h2 className="text-[26px] font-semibold text-[var(--text-primary)]">How many days per outfit?</h2>
+          <div style={{ padding: '1.5rem var(--page-px) 0' }}>
+            <h2 className="font-semibold text-[var(--text-primary)]" style={{ fontSize: 'var(--text-page-title)' }}>How many days per outfit?</h2>
             <p className="text-[15px] text-[var(--text-secondary)] mt-2">Pack fewer outfits the more days you wear each one.</p>
 
             <Card className="mt-6 p-5">
@@ -434,8 +434,8 @@ export function TripSetupPage() {
         )}
 
         {step === 6 && (
-          <div className="px-6 pt-6 pb-4 overflow-y-auto">
-            <h2 className="text-[26px] font-semibold text-[var(--text-primary)]">What's on the agenda?</h2>
+          <div className="overflow-y-auto" style={{ padding: '1.5rem var(--page-px) 1rem' }}>
+            <h2 className="font-semibold text-[var(--text-primary)]" style={{ fontSize: 'var(--text-page-title)' }}>What's on the agenda?</h2>
             <div className="flex items-center justify-between mt-2">
               <p className="text-[15px] text-[var(--text-secondary)]">Select all that apply.</p>
               {selectedActivities.size > 0 && (
@@ -509,7 +509,7 @@ export function TripSetupPage() {
       )}
 
       {/* Navigation buttons */}
-      <div className="px-6 pt-2 pb-12 flex gap-3">
+      <div className="flex gap-3" style={{ padding: '0.5rem var(--page-px) 3rem' }}>
         {step > 1 && (
           <Button variant="ghost" onClick={() => setStep(step - 1)}>Back</Button>
         )}

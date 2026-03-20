@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useRef, useCallback } from 'react';
+import { type ReactNode, useEffect, useRef, useCallback, useState } from 'react';
 import { X } from 'lucide-react';
 
 interface ModalProps {
@@ -11,6 +11,16 @@ interface ModalProps {
 
 export function Modal({ open, onClose, children, title, showHandle = true }: ModalProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const [isWide, setIsWide] = useState(() =>
+    typeof window !== 'undefined' && window.innerWidth >= 640
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 640px)');
+    const handler = (e: MediaQueryListEvent) => setIsWide(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
 
   useEffect(() => {
     if (open) {
@@ -56,17 +66,26 @@ export function Modal({ open, onClose, children, title, showHandle = true }: Mod
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center modal-backdrop" onClick={onClose}>
+    <div
+      className={`fixed inset-0 z-50 flex justify-center modal-backdrop ${
+        isWide ? 'items-center px-6' : 'items-end'
+      }`}
+      onClick={onClose}
+    >
       <div
         ref={ref}
-        className="w-full max-w-lg bg-[var(--background)] rounded-t-[20px] max-h-[90dvh] overflow-y-auto transition-slide-up animate-slide-up"
+        className={`bg-[var(--background)] max-h-[90dvh] overflow-y-auto ${
+          isWide
+            ? 'w-full max-w-lg rounded-[20px] animate-fade-scale-in'
+            : 'w-full max-w-lg rounded-t-[20px] transition-slide-up animate-slide-up'
+        }`}
         onClick={e => e.stopPropagation()}
         onKeyDown={handleKeyDown}
         role="dialog"
         aria-modal="true"
         aria-label={title}
       >
-        {showHandle && (
+        {showHandle && !isWide && (
           <div className="flex justify-center pt-3 pb-2">
             <div className="w-10 h-1 rounded-full bg-[var(--border)]" />
           </div>

@@ -46,7 +46,7 @@ export const TripCard = memo(function TripCard({ trip, items, isPast, onDuplicat
       <div className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
-            <h3 className={`text-[17px] font-semibold truncate ${isPast ? 'text-[var(--blue-faint)]' : 'text-[var(--text-primary)]'}`}>
+            <h3 className={`font-semibold truncate ${isPast ? 'text-[var(--blue-faint)]' : 'text-[var(--text-primary)]'}`} style={{ fontSize: 'var(--text-card-title)' }}>
               {trip.destination}
             </h3>
             <p className={`text-[12px] mt-1 ${isPast ? 'text-[var(--blue-pale)]' : 'text-[var(--text-secondary)]'}`}>

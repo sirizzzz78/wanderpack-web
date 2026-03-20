@@ -33,16 +33,16 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
       {/* Content */}
       <div className="flex-1 overflow-hidden">
         {page === 0 && (
-          <div className="flex flex-col items-center justify-center h-full px-6 gap-6">
+          <div className="flex flex-col items-center justify-center h-full gap-6" style={{ padding: '0 var(--page-px)' }}>
             <div className="w-36 h-36 flex items-center justify-center rounded-[14px]"
               style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 15%, transparent)' }}>
               <Backpack size={80} className="text-[var(--lavender)]" />
             </div>
-            <div className="text-center">
-              <h1 className="text-[32px] font-semibold text-[var(--text-primary)] tracking-tight leading-tight">
+            <div className="text-center max-w-md">
+              <h1 className="font-semibold text-[var(--text-primary)] tracking-tight leading-tight" style={{ fontSize: 'var(--text-hero)' }}>
                 Every trip starts{'\n'}with a good list
               </h1>
-              <p className="text-[16px] text-[var(--text-secondary)] mt-3 px-8">
+              <p className="text-[var(--text-secondary)] mt-3 px-8" style={{ fontSize: 'var(--text-body)' }}>
                 readiLi builds a packing list tailored to where you're going and what you're doing.
               </p>
             </div>
@@ -50,8 +50,8 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
         )}
 
         {page === 1 && (
-          <div className="flex flex-col items-center justify-center h-full px-6 gap-8">
-            <h2 className="text-[28px] font-semibold text-[var(--text-primary)] tracking-tight">
+          <div className="flex flex-col items-center justify-center h-full gap-8" style={{ padding: '0 var(--page-px)' }}>
+            <h2 className="font-semibold text-[var(--text-primary)] tracking-tight" style={{ fontSize: 'var(--text-page-title)' }}>
               How it works
             </h2>
             <Card className="w-full max-w-sm p-4">
