@@ -60,6 +60,22 @@
   }
 }
 
+/* App shell — center content on wide screens */
+.app-shell {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  position: relative;
+}
+
+/* On wider screens, add subtle side borders to the app shell */
+@media (min-width: 481px) {
+  .app-shell {
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+}
+
 /* Base Styles */
 * {
   box-sizing: border-box;

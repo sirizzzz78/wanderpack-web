@@ -80,12 +80,12 @@ export function HomePage() {
   return (
     <div className="min-h-dvh bg-[var(--background)] relative">
       {/* Mountain background at bottom */}
-      <div className="fixed bottom-0 left-0 right-0 pointer-events-none">
+      <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
         <MountainBackground />
       </div>
 
       <div className="relative z-10 pb-24">
-        <div className="px-5 pt-6">
+        <div className="px-6 pt-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-[28px] font-semibold text-[var(--text-primary)] tracking-tight">
@@ -197,14 +197,16 @@ export function HomePage() {
       </div>
 
       {/* FAB */}
-      <button
-        onClick={() => navigate('/setup')}
-        aria-label="Create new trip"
-        className="fixed bottom-10 right-6 z-20 w-14 h-14 rounded-full bg-[var(--salmon)] flex items-center justify-center shadow-lg active:scale-95 transition-transform"
-        style={{ boxShadow: '0 4px 12px color-mix(in srgb, var(--salmon) 30%, transparent)' }}
-      >
-        <Plus size={22} className="text-white" strokeWidth={2.5} />
-      </button>
+      <div className="sticky bottom-10 z-20 flex justify-end pr-6 pointer-events-none" style={{ marginTop: '-3.5rem' }}>
+        <button
+          onClick={() => navigate('/setup')}
+          aria-label="Create new trip"
+          className="pointer-events-auto w-14 h-14 rounded-full bg-[var(--salmon)] flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+          style={{ boxShadow: '0 4px 12px color-mix(in srgb, var(--salmon) 30%, transparent)' }}
+        >
+          <Plus size={22} className="text-white" strokeWidth={2.5} />
+        </button>
+      </div>
 
       {/* Delete dialog */}
       <ConfirmDialog

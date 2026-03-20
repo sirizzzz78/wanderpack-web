@@ -179,7 +179,7 @@ export function PackingListPage() {
 
   if (!trip && loadTimeout) {
     return (
-      <div className="min-h-dvh flex flex-col items-center justify-center bg-[var(--background)] px-5 gap-4">
+      <div className="min-h-dvh flex flex-col items-center justify-center bg-[var(--background)] px-6 gap-4">
         <AlertCircle size={48} className="text-[var(--text-secondary)] opacity-50" />
         <h2 className="text-[20px] font-semibold text-[var(--text-primary)]">Trip not found</h2>
         <p className="text-[15px] text-[var(--text-secondary)] text-center">
@@ -187,7 +187,7 @@ export function PackingListPage() {
         </p>
         <button
           onClick={() => navigate('/')}
-          className="mt-4 px-6 py-3 rounded-[20px] bg-[var(--lavender)] text-white text-[15px] font-semibold"
+          className="mt-4 px-8 py-5 rounded-[20px] bg-[var(--lavender)] text-white text-[16px] font-semibold"
         >
           Back to My Trips
         </button>
@@ -206,20 +206,20 @@ export function PackingListPage() {
   return (
     <div className="min-h-dvh bg-[var(--background)]">
       {/* Nav bar */}
-      <div className="sticky top-0 z-20 bg-[var(--background)] px-5 pt-4 pb-2 flex items-center justify-between">
-        <button onClick={() => navigate('/')} aria-label="Back to trips" className="p-1">
+      <div className="sticky top-0 z-20 bg-[var(--background)] px-6 pt-4 pb-2 flex items-center justify-between">
+        <button onClick={() => navigate('/')} aria-label="Back to trips" className="p-2 -ml-2">
           <ChevronLeft size={24} className="text-[var(--lavender)]" />
         </button>
         <h1 className="text-[17px] font-semibold text-[var(--text-primary)] truncate mx-3">
           {trip.destination}
         </h1>
         <div className="flex items-center gap-3">
-          <button onClick={handleShare} aria-label="Share packing list"><Share size={18} className="text-[var(--lavender)]" /></button>
-          <button onClick={() => setShowEditTrip(true)} aria-label="Edit trip"><Pencil size={18} className="text-[var(--lavender)]" /></button>
+          <button onClick={handleShare} aria-label="Share packing list" className="p-2 -m-1 rounded-full"><Share size={18} className="text-[var(--lavender)]" /></button>
+          <button onClick={() => setShowEditTrip(true)} aria-label="Edit trip" className="p-2 -m-1 rounded-full"><Pencil size={18} className="text-[var(--lavender)]" /></button>
         </div>
       </div>
 
-      <div className="px-5 pb-12 flex flex-col gap-3">
+      <div className="px-6 pb-12 flex flex-col gap-3">
         {/* Archive banner */}
         {isPast && (
           <div className="flex items-center gap-3 p-4 rounded-[14px]"
@@ -294,10 +294,10 @@ export function PackingListPage() {
               <button
                 onClick={() => { setAddAsMustPack(true); setAddCategory(''); setShowAddSheet(true); }}
                 aria-label="Add must-pack item"
-                className="w-7 h-7 flex items-center justify-center rounded-full"
+                className="w-9 h-9 flex items-center justify-center rounded-full"
                 style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 12%, transparent)' }}
               >
-                <Plus size={13} className="text-[var(--lavender)]" />
+                <Plus size={14} className="text-[var(--lavender)]" />
               </button>
             </div>
             {mustPackItems.length > 0 && (
@@ -348,10 +348,10 @@ export function PackingListPage() {
                 <button
                   onClick={() => { setAddAsMustPack(false); setAddCategory(category); setShowAddSheet(true); }}
                   aria-label={`Add item to ${category}`}
-                  className="w-7 h-7 flex items-center justify-center rounded-full"
+                  className="w-9 h-9 flex items-center justify-center rounded-full"
                   style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 12%, transparent)' }}
                 >
-                  <Plus size={13} className="text-[var(--lavender)]" />
+                  <Plus size={14} className="text-[var(--lavender)]" />
                 </button>
               </div>
 
@@ -384,7 +384,7 @@ export function PackingListPage() {
         {/* Add another item */}
         <button
           onClick={() => { setAddAsMustPack(false); setAddCategory(''); setShowAddSheet(true); }}
-          className="flex items-center justify-center gap-2 py-3.5 rounded-[20px] text-[15px] font-medium text-[var(--lavender)]"
+          className="flex items-center justify-center gap-2 py-5 rounded-[20px] text-[15px] font-semibold text-[var(--lavender)]"
           style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 8%, transparent)' }}
         >
           <PlusCircle size={16} /> Add another item
@@ -448,8 +448,8 @@ function ItemRow({
   const unused = unusedNames.has(item.name.toLowerCase());
 
   return (
-    <div className="flex items-center gap-3 px-4 py-2.5">
-      <button onClick={() => togglePacked(item.id, !item.isPacked)}>
+    <div className="flex items-center gap-3 px-4 py-3.5">
+      <button onClick={() => togglePacked(item.id, !item.isPacked)} className="p-1 -m-1">
         {item.isPacked
           ? <CheckCircle2 size={22} className="text-[var(--salmon)]" />
           : <Circle size={22} className="text-[var(--lavender)] opacity-40" />}
@@ -476,11 +476,11 @@ function ItemRow({
       {!isMustPack && item.isMustPack && (
         <Star size={11} className="text-[var(--lavender)] shrink-0" fill="var(--lavender)" />
       )}
-      <button onClick={onEdit} aria-label={`Edit ${item.name}`} className="p-1.5 rounded-full hover:bg-[var(--border)]">
-        <Pencil size={14} className="text-[var(--text-secondary)]" />
+      <button onClick={onEdit} aria-label={`Edit ${item.name}`} className="p-2.5 -m-1 rounded-full hover:bg-[var(--border)]">
+        <Pencil size={15} className="text-[var(--text-secondary)]" />
       </button>
-      <button onClick={onDelete} aria-label={`Delete ${item.name}`} className="p-1.5 rounded-full hover:bg-[var(--border)]">
-        <Trash2 size={14} className="text-[var(--destructive)]" />
+      <button onClick={onDelete} aria-label={`Delete ${item.name}`} className="p-2.5 -m-1 rounded-full hover:bg-[var(--border)]">
+        <Trash2 size={15} className="text-[var(--destructive)]" />
       </button>
     </div>
   );

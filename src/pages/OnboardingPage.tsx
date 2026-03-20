@@ -21,7 +21,7 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
   return (
     <div className="min-h-dvh flex flex-col bg-[var(--background)]">
       {/* Skip */}
-      <div className="flex justify-end px-5 pt-3">
+      <div className="flex justify-end px-6 pt-3">
         <button
           onClick={onComplete}
           className="text-[15px] font-medium text-[var(--text-secondary)]"
@@ -33,7 +33,7 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
       {/* Content */}
       <div className="flex-1 overflow-hidden">
         {page === 0 && (
-          <div className="flex flex-col items-center justify-center h-full px-5 gap-6">
+          <div className="flex flex-col items-center justify-center h-full px-6 gap-6">
             <div className="w-36 h-36 flex items-center justify-center rounded-[14px]"
               style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 15%, transparent)' }}>
               <Backpack size={80} className="text-[var(--lavender)]" />
@@ -50,7 +50,7 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
         )}
 
         {page === 1 && (
-          <div className="flex flex-col items-center justify-center h-full px-5 gap-8">
+          <div className="flex flex-col items-center justify-center h-full px-6 gap-8">
             <h2 className="text-[28px] font-semibold text-[var(--text-primary)] tracking-tight">
               How it works
             </h2>
@@ -79,7 +79,7 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
       </div>
 
       {/* Dots + Next */}
-      <div className="px-5 pb-12 pt-4 flex flex-col items-center gap-5">
+      <div className="px-6 pb-12 pt-4 flex flex-col items-center gap-5">
         <div className="flex gap-2">
           {[0, 1].map(i => (
             <button

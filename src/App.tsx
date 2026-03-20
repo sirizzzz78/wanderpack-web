@@ -32,12 +32,14 @@ export function App() {
 
   return (
     <BrowserRouter basename="/readili-web">
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/setup" element={<TripSetupPage />} />
-        <Route path="/trip/:id" element={<PackingListPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <div className="app-shell">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/setup" element={<TripSetupPage />} />
+          <Route path="/trip/:id" element={<PackingListPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
     </BrowserRouter>
   );
 }

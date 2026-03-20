@@ -6,7 +6,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export function Button({ variant = 'primary', children, className = '', disabled, ...props }: ButtonProps) {
-  const base = 'w-full py-4 rounded-[20px] font-semibold text-[16px] transition-all duration-150 active:scale-[0.98]';
+  const base = 'w-full py-5 rounded-[20px] font-semibold text-[16px] transition-all duration-150 active:scale-[0.98]';
 
   const variants = {
     primary: `${base} text-white ${disabled ? 'bg-[var(--button-disabled)] cursor-not-allowed' : 'bg-[var(--lavender)] hover:opacity-90'}`,

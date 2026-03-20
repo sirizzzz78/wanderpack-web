@@ -15,7 +15,7 @@ export function LearnedItemsSheet({ onClose }: LearnedItemsSheetProps) {
 
   if (items.length === 0 && unusedNames.length === 0) {
     return (
-      <div className="px-5 pb-12 flex flex-col items-center gap-4 pt-8">
+      <div className="px-6 pb-12 flex flex-col items-center gap-4 pt-8">
         <Brain size={48} className="text-[var(--lavender)] opacity-50" />
         <h3 className="text-[17px] font-semibold text-[var(--text-primary)]">No learned items yet</h3>
         <p className="text-[14px] text-[var(--text-secondary)] text-center px-10">
@@ -26,7 +26,7 @@ export function LearnedItemsSheet({ onClose }: LearnedItemsSheetProps) {
   }
 
   return (
-    <div className="px-5 pb-8 max-h-[70dvh] overflow-y-auto">
+    <div className="px-6 pb-8 max-h-[70dvh] overflow-y-auto">
       {items.length > 0 && (
         <Card className="overflow-hidden mb-4">
           {items.map((item, i) => (

@@ -67,7 +67,7 @@ export function PostTripFeedbackSheet({ tripId, onClose }: PostTripFeedbackSheet
   };
 
   return (
-    <div className="px-5 pb-8 max-h-[70dvh] overflow-y-auto">
+    <div className="px-6 pb-8 max-h-[70dvh] overflow-y-auto">
       <p className="text-[15px] text-[var(--text-secondary)] mb-6">Your feedback helps improve future packing lists.</p>
 
       {/* Unpacked items */}

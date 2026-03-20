@@ -29,7 +29,7 @@ export function ConfirmDialog({
           <Button variant="ghost" onClick={onCancel}>{cancelLabel}</Button>
           <button
             onClick={onConfirm}
-            className={`flex-1 py-3 rounded-[20px] font-semibold text-[16px] text-white transition-opacity active:scale-[0.98] ${
+            className={`flex-1 py-5 rounded-[20px] font-semibold text-[16px] text-white transition-opacity active:scale-[0.98] ${
               destructive ? 'bg-[var(--destructive)]' : 'bg-[var(--lavender)]'
             }`}
           >

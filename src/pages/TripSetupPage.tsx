@@ -148,7 +148,7 @@ export function TripSetupPage() {
 
   if (showCompletion) {
     return (
-      <div className="min-h-dvh flex flex-col items-center justify-center bg-[var(--background)] px-5 gap-6">
+      <div className="min-h-dvh flex flex-col items-center justify-center bg-[var(--background)] px-6 gap-6">
         <CheckCircle2 size={72} className="text-[var(--salmon)]" />
         <div className="text-center">
           <h1 className="text-[28px] font-semibold text-[var(--text-primary)] tracking-tight">Ready to roll</h1>
@@ -182,7 +182,7 @@ export function TripSetupPage() {
   return (
     <div className="min-h-dvh flex flex-col bg-[var(--background)]">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-4">
+      <div className="flex items-center justify-between px-6 pt-4">
         <button
           onClick={handleClose}
           aria-label="Close"
@@ -195,7 +195,7 @@ export function TripSetupPage() {
       </div>
 
       {/* Progress bar + S12: step counter */}
-      <div className="px-5 pt-5 pb-2">
+      <div className="px-6 pt-5 pb-2">
         <div className="flex gap-1.5">
           {Array.from({ length: totalSteps }, (_, i) => (
             <div
@@ -212,7 +212,7 @@ export function TripSetupPage() {
       {/* Step content */}
       <div className="flex-1 overflow-y-auto">
         {step === 1 && (
-          <div className="px-5 pt-6">
+          <div className="px-6 pt-6">
             <h2 className="text-[26px] font-semibold text-[var(--text-primary)]">Where are you headed?</h2>
             <p className="text-[15px] text-[var(--text-secondary)] mt-2">Enter your destination city or country.</p>
             <Card className="mt-6 flex items-center gap-3 p-4">
@@ -236,7 +236,7 @@ export function TripSetupPage() {
         )}
 
         {step === 2 && (
-          <div className="px-5 pt-6">
+          <div className="px-6 pt-6">
             <h2 className="text-[26px] font-semibold text-[var(--text-primary)]">Tell us about your trip</h2>
             <p className="text-[15px] text-[var(--text-secondary)] mt-2">We'll tailor your packing list to match.</p>
 
@@ -287,7 +287,7 @@ export function TripSetupPage() {
         )}
 
         {step === 3 && (
-          <div className="px-5 pt-6">
+          <div className="px-6 pt-6">
             <h2 className="text-[26px] font-semibold text-[var(--text-primary)]">When are you traveling?</h2>
             <p className="text-[15px] text-[var(--text-secondary)] mt-2">Pick your departure and return dates.</p>
 
@@ -338,7 +338,7 @@ export function TripSetupPage() {
         )}
 
         {step === 4 && (
-          <div className="px-5 pt-6">
+          <div className="px-6 pt-6">
             <h2 className="text-[26px] font-semibold text-[var(--text-primary)]">Will you do laundry?</h2>
             <p className="text-[15px] text-[var(--text-secondary)] mt-2">Pick the days you'll have access to laundry.</p>
 
@@ -389,7 +389,7 @@ export function TripSetupPage() {
         )}
 
         {step === 5 && (
-          <div className="px-5 pt-6">
+          <div className="px-6 pt-6">
             <h2 className="text-[26px] font-semibold text-[var(--text-primary)]">How many days per outfit?</h2>
             <p className="text-[15px] text-[var(--text-secondary)] mt-2">Pack fewer outfits the more days you wear each one.</p>
 
@@ -432,7 +432,7 @@ export function TripSetupPage() {
         )}
 
         {step === 6 && (
-          <div className="px-5 pt-6 pb-4 overflow-y-auto">
+          <div className="px-6 pt-6 pb-4 overflow-y-auto">
             <h2 className="text-[26px] font-semibold text-[var(--text-primary)]">What's on the agenda?</h2>
             <div className="flex items-center justify-between mt-2">
               <p className="text-[15px] text-[var(--text-secondary)]">Select all that apply.</p>
@@ -501,13 +501,13 @@ export function TripSetupPage() {
 
       {/* S10: Basics only note */}
       {step === totalSteps && selectedActivities.size === 0 && (
-        <p className="text-[13px] text-[var(--text-secondary)] text-center px-5 pb-1">
+        <p className="text-[13px] text-[var(--text-secondary)] text-center px-6 pb-1">
           No activities selected — list will include basics only.
         </p>
       )}
 
       {/* Navigation buttons */}
-      <div className="px-5 pb-8 pt-2 flex gap-3">
+      <div className="px-6 pb-8 pt-2 flex gap-3">
         {step > 1 && (
           <Button variant="ghost" onClick={() => setStep(step - 1)}>Back</Button>
         )}

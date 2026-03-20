@@ -44,7 +44,7 @@ export function AddItemSheet({ tripId, existingCategories, preselectedCategory, 
   };
 
   return (
-    <div className="px-5 pb-8">
+    <div className="px-6 pb-8">
       <p className="text-[14px] text-[var(--text-secondary)] mb-6">
         {isMustPack ? 'This item will always appear at the top of your list.' : 'Add a custom item to your packing list.'}
       </p>

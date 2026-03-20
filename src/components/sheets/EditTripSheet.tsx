@@ -92,7 +92,7 @@ export function EditTripSheet({ trip, onClose }: EditTripSheetProps) {
   };
 
   return (
-    <div className="px-5 pb-8 max-h-[70dvh] overflow-y-auto">
+    <div className="px-6 pb-8 max-h-[70dvh] overflow-y-auto">
       <div className="flex flex-col gap-5">
         {/* Destination */}
         <Card className="flex items-center gap-3 p-4">
