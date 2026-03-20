@@ -17,7 +17,7 @@ export function PostTripFeedbackSheet({ tripId, onClose }: PostTripFeedbackSheet
   const items = usePackingItems(tripId);
 
   const [unpackedSelections, setUnpackedSelections] = useState<Set<string>>(new Set());
-  const [wishlistItems, setWishlistItems] = useState<{ name: string; category: string }[]>([]);
+  const [wishlistItems, setWishlistItems] = useState<{ id: string; name: string; category: string }[]>([]);
   const [newName, setNewName] = useState('');
   const [newCategory, setNewCategory] = useState('Essentials');
 
@@ -25,9 +25,9 @@ export function PostTripFeedbackSheet({ tripId, onClose }: PostTripFeedbackSheet
     if (trip?.feedbackUnpacked) setUnpackedSelections(new Set(trip.feedbackUnpacked));
     if (trip?.feedbackWishlist) {
       const names = trip.feedbackWishlist.split(',').map(s => s.trim()).filter(Boolean);
-      setWishlistItems(names.map(n => ({ name: n, category: 'Essentials' })));
+      setWishlistItems(names.map(n => ({ name: n, category: 'Essentials', id: crypto.randomUUID() })));
     }
-  }, [trip?.id]);
+  }, [trip?.id, trip?.feedbackUnpacked, trip?.feedbackWishlist]);
 
   if (!trip) return null;
 
@@ -44,7 +44,7 @@ export function PostTripFeedbackSheet({ tripId, onClose }: PostTripFeedbackSheet
   const addWishlist = () => {
     const trimmed = newName.trim();
     if (!trimmed) return;
-    setWishlistItems(prev => [...prev, { name: trimmed, category: newCategory }]);
+    setWishlistItems(prev => [...prev, { id: crypto.randomUUID(), name: trimmed, category: newCategory }]);
     setNewName('');
   };
 
@@ -130,10 +130,10 @@ export function PostTripFeedbackSheet({ tripId, onClose }: PostTripFeedbackSheet
         </div>
         {wishlistItems.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-2">
-            {wishlistItems.map((item, i) => (
-              <span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-[12px] text-[13px] font-medium bg-[var(--lavender)] text-white">
+            {wishlistItems.map(item => (
+              <span key={item.id} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-[12px] text-[13px] font-medium bg-[var(--lavender)] text-white">
                 {item.name} <span className="opacity-70">· {item.category}</span>
-                <button onClick={() => setWishlistItems(prev => prev.filter((_, j) => j !== i))}>
+                <button onClick={() => setWishlistItems(prev => prev.filter(w => w.id !== item.id))}>
                   <XCircle size={14} className="text-white opacity-70" />
                 </button>
               </span>

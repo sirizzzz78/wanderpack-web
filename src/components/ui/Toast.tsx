@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, createContext, useContext, type ReactNode } from 'react';
+import { useEffect, useState, useCallback, useRef, createContext, useContext, type ReactNode } from 'react';
 import { X, CheckCircle2, AlertCircle, Info } from 'lucide-react';
 
 type ToastType = 'success' | 'error' | 'info';
@@ -47,14 +47,19 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
 function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }) {
   const [visible, setVisible] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const fadeRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     requestAnimationFrame(() => setVisible(true));
-    const timer = setTimeout(() => {
+    timerRef.current = setTimeout(() => {
       setVisible(false);
-      setTimeout(onDismiss, 300);
+      fadeRef.current = setTimeout(onDismiss, 300);
     }, 3000);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timerRef.current);
+      clearTimeout(fadeRef.current);
+    };
   }, [onDismiss]);
 
   const Icon = toast.type === 'success' ? CheckCircle2 : toast.type === 'error' ? AlertCircle : Info;

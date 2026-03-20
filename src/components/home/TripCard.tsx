@@ -1,5 +1,5 @@
 import { ChevronRight, MoreVertical, Copy, Trash2, Star, MessageSquare } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Trip, PackingItem } from '../../db/models';
 import { getFormattedDateRange, getTripDays } from '../../db/hooks';
@@ -16,7 +16,7 @@ interface TripCardProps {
   onFeedback?: () => void;
 }
 
-export function TripCard({ trip, items, isPast, onDuplicate, onDelete, onFeedback }: TripCardProps) {
+export const TripCard = memo(function TripCard({ trip, items, isPast, onDuplicate, onDelete, onFeedback }: TripCardProps) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -133,4 +133,4 @@ export function TripCard({ trip, items, isPast, onDuplicate, onDelete, onFeedbac
       </div>
     </div>
   );
-}
+});

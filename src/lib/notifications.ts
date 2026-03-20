@@ -33,7 +33,6 @@ export function checkAndNotify(trips: Trip[]) {
         icon: '/readili-web/icons/icon-192.png',
       });
       localStorage.setItem(notifiedKey, todayStr);
-      return;
     }
 
     if (daysUntil === 1) {
@@ -42,7 +41,6 @@ export function checkAndNotify(trips: Trip[]) {
         icon: '/readili-web/icons/icon-192.png',
       });
       localStorage.setItem(notifiedKey, todayStr);
-      return;
     }
   }
 }

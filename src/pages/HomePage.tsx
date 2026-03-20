@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Brain, Leaf, ChevronRight, X } from 'lucide-react';
 import { useTrips, usePackingItems, deleteTrip, duplicateTrip } from '../db/hooks';
@@ -52,28 +52,28 @@ export function HomePage() {
     [pastTrips, dismissedFeedback]
   );
 
-  const dismissFeedback = (tripId: string) => {
+  const dismissFeedback = useCallback((tripId: string) => {
     setDismissedFeedback(prev => {
       const next = new Set(prev);
       next.add(tripId);
       localStorage.setItem('readiLi.dismissedFeedback', JSON.stringify([...next]));
       return next;
     });
-  };
+  }, []);
 
-  const handleDuplicate = async (tripId: string) => {
+  const handleDuplicate = useCallback(async (tripId: string) => {
     const source = trips.find(t => t.id === tripId);
     if (!source) return;
     await duplicateTrip(source);
     showToast('Trip duplicated', 'success');
-  };
+  }, [trips, showToast]);
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
     await deleteTrip(deleteTarget);
     setDeleteTarget(null);
     showToast('Trip deleted', 'success');
-  };
+  }, [deleteTarget, showToast]);
 
   const deleteTargetTrip = trips.find(t => t.id === deleteTarget);
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Trash2, Brain } from 'lucide-react';
 import { useLearnedItems, removeLearnedItems, getUnusedNames, clearUnused } from '../../db/hooks';
 import { Card } from '../ui/Card';
@@ -11,7 +11,7 @@ interface LearnedItemsSheetProps {
 export function LearnedItemsSheet({ onClose }: LearnedItemsSheetProps) {
   const items = useLearnedItems();
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
-  const unusedNames = [...getUnusedNames()].sort();
+  const unusedNames = useMemo(() => [...getUnusedNames()].sort(), [items]);
 
   if (items.length === 0 && unusedNames.length === 0) {
     return (

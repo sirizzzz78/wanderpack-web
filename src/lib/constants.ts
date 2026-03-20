@@ -65,3 +65,5 @@ export const CATEGORY_OPTIONS = [
   'Business', 'Gym / Fitness', 'Skiing',
   'Wedding', 'Formal Dinner', 'Concert', 'Festival',
 ];
+
+export const ALL_ACTIVITIES: ActivityDef[] = [...ACTIVITY_LIST, ...EVENT_LIST];

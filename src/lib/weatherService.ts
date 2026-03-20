@@ -19,10 +19,14 @@ const cache = new Map<string, { summary: WeatherSummary; fetched: number }>();
 const MAX_CACHE = 20;
 const CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours
 
+// Debounce: track pending fetches by cache key
+const pendingFetches = new Map<string, Promise<WeatherSummary>>();
+
 export async function fetchWeather(
   destination: string,
   tripStart: string,
-  tripEnd: string
+  tripEnd: string,
+  signal?: AbortSignal
 ): Promise<WeatherSummary> {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -44,67 +48,104 @@ export async function fetchWeather(
     return cached.summary;
   }
 
-  // Geocode using Open-Meteo geocoding API
+  // Deduplicate concurrent fetches for the same key
+  const pending = pendingFetches.get(cacheKey);
+  if (pending) return pending;
+
+  const fetchPromise = fetchWeatherInner(destination, windowStart, windowEnd, cacheKey, signal);
+  pendingFetches.set(cacheKey, fetchPromise);
+
+  try {
+    return await fetchPromise;
+  } finally {
+    pendingFetches.delete(cacheKey);
+  }
+}
+
+async function fetchWeatherInner(
+  destination: string,
+  windowStart: Date,
+  windowEnd: Date,
+  cacheKey: string,
+  signal?: AbortSignal
+): Promise<WeatherSummary> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
 
-  try {
-  const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(destination)}&count=1&language=en&format=json`;
-  const geoRes = await fetch(geoUrl, { signal: controller.signal });
-  const geoData = await geoRes.json();
-
-  if (!geoData.results?.length) {
-    throw new Error('geocodingFailed');
+  // Chain external signal to our controller
+  if (signal) {
+    signal.addEventListener('abort', () => controller.abort(), { once: true });
   }
 
-  const { latitude, longitude } = geoData.results[0];
+  const doFetch = async (): Promise<WeatherSummary> => {
+    try {
+      const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(destination)}&count=1&language=en&format=json`;
+      const geoRes = await fetch(geoUrl, { signal: controller.signal });
+      const geoData = await geoRes.json();
 
-  // Fetch forecast
-  const fmt = (d: Date) => d.toISOString().split('T')[0];
-  const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude.toFixed(4)}&longitude=${longitude.toFixed(4)}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&start_date=${fmt(windowStart)}&end_date=${fmt(windowEnd)}&timezone=auto`;
+      if (!geoData.results?.length) {
+        throw new Error('geocodingFailed');
+      }
 
-  const res = await fetch(forecastUrl, { signal: controller.signal });
-  const data = await res.json();
+      const { latitude, longitude } = geoData.results[0];
 
-  const daily = data.daily;
-  const forecasts: DailyForecast[] = [];
+      const fmt = (d: Date) => d.toISOString().split('T')[0];
+      const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude.toFixed(4)}&longitude=${longitude.toFixed(4)}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&start_date=${fmt(windowStart)}&end_date=${fmt(windowEnd)}&timezone=auto`;
 
-  for (let i = 0; i < daily.time.length; i++) {
-    if (i >= daily.temperature_2m_max.length || i >= daily.temperature_2m_min.length || i >= daily.weathercode.length) break;
-    forecasts.push({
-      date: daily.time[i],
-      high: daily.temperature_2m_max[i],
-      low: daily.temperature_2m_min[i],
-      precipProbability: daily.precipitation_probability_max?.[i] ?? 0,
-      weatherCode: daily.weathercode[i],
-    });
-  }
+      const res = await fetch(forecastUrl, { signal: controller.signal });
+      const data = await res.json();
 
-  if (forecasts.length === 0) {
-    return { avgHigh: 0, avgLow: 0, maxPrecipProb: 0, dominantWeatherCode: 0, forecasts: [] };
-  }
+      const daily = data.daily;
+      const forecasts: DailyForecast[] = [];
 
-  const avgHigh = forecasts.reduce((s, f) => s + f.high, 0) / forecasts.length;
-  const avgLow = forecasts.reduce((s, f) => s + f.low, 0) / forecasts.length;
-  const maxPrecipProb = Math.max(...forecasts.map(f => f.precipProbability));
-  const dominantWeatherCode = Math.max(...forecasts.map(f => f.weatherCode));
+      for (let i = 0; i < daily.time.length; i++) {
+        if (i >= daily.temperature_2m_max.length || i >= daily.temperature_2m_min.length || i >= daily.weathercode.length) break;
+        forecasts.push({
+          date: daily.time[i],
+          high: daily.temperature_2m_max[i],
+          low: daily.temperature_2m_min[i],
+          precipProbability: daily.precipitation_probability_max?.[i] ?? 0,
+          weatherCode: daily.weathercode[i],
+        });
+      }
 
-  const summary: WeatherSummary = { avgHigh, avgLow, maxPrecipProb, dominantWeatherCode, forecasts };
+      if (forecasts.length === 0) {
+        return { avgHigh: 0, avgLow: 0, maxPrecipProb: 0, dominantWeatherCode: 0, forecasts: [] };
+      }
 
-  // LRU eviction
-  if (cache.size >= MAX_CACHE) {
-    let oldest = '';
-    let oldestTime = Infinity;
-    for (const [key, val] of cache) {
-      if (val.fetched < oldestTime) { oldest = key; oldestTime = val.fetched; }
+      const avgHigh = forecasts.reduce((s, f) => s + f.high, 0) / forecasts.length;
+      const avgLow = forecasts.reduce((s, f) => s + f.low, 0) / forecasts.length;
+      const maxPrecipProb = Math.max(...forecasts.map(f => f.precipProbability));
+      const dominantWeatherCode = Math.max(...forecasts.map(f => f.weatherCode));
+
+      const summary: WeatherSummary = { avgHigh, avgLow, maxPrecipProb, dominantWeatherCode, forecasts };
+
+      // LRU eviction
+      if (cache.size >= MAX_CACHE) {
+        let oldest = '';
+        let oldestTime = Infinity;
+        for (const [key, val] of cache) {
+          if (val.fetched < oldestTime) { oldest = key; oldestTime = val.fetched; }
+        }
+        if (oldest) cache.delete(oldest);
+      }
+      cache.set(cacheKey, { summary, fetched: Date.now() });
+
+      return summary;
+    } finally {
+      clearTimeout(timeout);
     }
-    if (oldest) cache.delete(oldest);
-  }
-  cache.set(cacheKey, { summary, fetched: Date.now() });
+  };
 
-  return summary;
-  } finally {
-    clearTimeout(timeout);
+  try {
+    return await doFetch();
+  } catch (e: any) {
+    // Retry once after 2s on transient failures (not aborts or known errors)
+    if (e?.name === 'AbortError' || e?.message === 'geocodingFailed' || e?.message === 'outsideForecastWindow') {
+      throw e;
+    }
+    await new Promise(r => setTimeout(r, 2000));
+    return await doFetch();
   }
 }
 
