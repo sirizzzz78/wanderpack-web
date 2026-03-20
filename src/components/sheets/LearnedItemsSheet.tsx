@@ -39,8 +39,8 @@ export function LearnedItemsSheet({ onClose }: LearnedItemsSheetProps) {
                 {item.quantity > 1 && (
                   <span className="text-[13px] text-[var(--text-secondary)]">&times;{item.quantity}</span>
                 )}
-                <button onClick={() => setDeleteTarget(item.name)} className="p-1.5">
-                  <Trash2 size={14} className="text-[var(--destructive)]" />
+                <button onClick={() => setDeleteTarget(item.name)} aria-label={`Delete ${item.name}`} className="p-2.5 -m-1 rounded-full">
+                  <Trash2 size={16} className="text-[var(--destructive)]" />
                 </button>
               </div>
               {i < items.length - 1 && <div className="border-b border-[var(--border)] ml-4" />}
@@ -63,7 +63,7 @@ export function LearnedItemsSheet({ onClose }: LearnedItemsSheetProps) {
                     onClick={() => clearUnused([name])}
                     className="text-[13px] font-medium text-[var(--lavender)]"
                   >
-                    Clear
+                    Dismiss
                   </button>
                 </div>
                 {i < unusedNames.length - 1 && <div className="border-b border-[var(--border)] ml-4" />}

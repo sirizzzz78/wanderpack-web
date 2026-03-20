@@ -28,7 +28,9 @@ export function useLearnedItems() {
 
 export async function createTrip(data: Omit<Trip, 'id'>): Promise<Trip> {
   const trip: Trip = { ...data, id: uuidv4() };
-  await db.trips.add(trip);
+  await db.transaction('rw', db.trips, async () => {
+    await db.trips.add(trip);
+  });
   return trip;
 }
 

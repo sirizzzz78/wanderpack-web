@@ -120,10 +120,10 @@ function getActivityItems(activity: string, outfits: number): PackingItemDraft[]
     case 'Swimming':
       return [
         { name: 'Swimsuit', category: 'Swimming', quantity: 2, isMustPack: false },
-        item('Goggles', 'Swimming'),
-        item('Flip Flops', 'Swimming'),
+        item('Swim Goggles', 'Swimming'),
+        item('Flip Flops / Sandals', 'Swimming'),
         item('Swim Cap', 'Swimming'),
-        item('Towel', 'Swimming'),
+        item('Swim Towel', 'Swimming'),
         item('Waterproof Phone Pouch', 'Swimming'),
       ];
     case 'Hiking':
@@ -131,13 +131,13 @@ function getActivityItems(activity: string, outfits: number): PackingItemDraft[]
         item('Hiking Boots', 'Hiking'),
         { name: 'Moisture-Wicking Shirts', category: 'Hiking', quantity: outfits, isMustPack: false },
         item('Trekking Poles', 'Hiking'),
-        item('Daypack', 'Hiking'),
+        item('Day Bag / Backpack', 'Hiking'),
         item('Water Bottle', 'Hiking'),
         item('Trail Snacks', 'Hiking'),
         item('First Aid Kit', 'Hiking'),
         item('Sunscreen', 'Hiking'),
         item('Sunglasses', 'Hiking'),
-        item('Bug Spray', 'Hiking'),
+        item('Insect Repellent', 'Hiking'),
       ];
     case 'Camping':
       return [
@@ -145,17 +145,17 @@ function getActivityItems(activity: string, outfits: number): PackingItemDraft[]
         item('Pillow', 'Camping'), item('Tarp / Ground Cloth', 'Camping'),
         item('Headlamp', 'Camping'), item('Lantern', 'Camping'), item('Extra Batteries', 'Camping'),
         item('Cooler', 'Camping'), item('Camp Stove', 'Camping'), item('Fuel', 'Camping'),
-        item('Cookset / Pots & Pans', 'Camping'), item('Eating Utensils', 'Camping'),
+        item('Cookset', 'Camping'), item('Eating Utensils', 'Camping'),
         item('Plates / Bowls', 'Camping'), item('Mug / Cup', 'Camping'),
         item('Can Opener / Bottle Opener', 'Camping'), item('Cutting Board & Knife', 'Camping'),
         item('Biodegradable Soap', 'Camping'), item('Sponge / Scrubber', 'Camping'),
         item('Aluminum Foil', 'Camping'), item('Paper Towels', 'Camping'),
         item('Food / Meals', 'Camping'), item('Snacks', 'Camping'), item('Coffee / Tea', 'Camping'),
-        item('Water Bottles / Jug', 'Camping'), item('Water Filter / Purifier', 'Camping'),
+        item('Water Bottle', 'Camping'), item('Water Filter / Purifier', 'Camping'),
         item('Fire Starter', 'Camping'), item('Lighter / Matches', 'Camping'),
         item('Firewood / Fire Logs', 'Camping'),
         item('Camp Chair', 'Camping'), item('Camp Table', 'Camping'),
-        item('First Aid Kit', 'Camping'), item('Bug Spray', 'Camping'),
+        item('First Aid Kit', 'Camping'), item('Insect Repellent', 'Camping'),
         item('Sunscreen', 'Camping'), item('Toilet Paper', 'Camping'),
         item('Hand Sanitizer', 'Camping'), item('Trash Bags', 'Camping'),
         item('Knife / Multi-tool', 'Camping'), item('Duct Tape', 'Camping'),
@@ -163,13 +163,13 @@ function getActivityItems(activity: string, outfits: number): PackingItemDraft[]
       ];
     case 'Backpacking':
       return [
-        item('Backpack', 'Backpacking'), item('Backpacking Tent', 'Backpacking'),
+        item('Backpacking Pack', 'Backpacking'), item('Backpacking Tent', 'Backpacking'),
         item('Sleeping Bag', 'Backpacking'), item('Sleeping Pad', 'Backpacking'),
         item('Headlamp', 'Backpacking'), item('Trekking Poles', 'Backpacking'),
         item('Rain Cover', 'Backpacking'),
         item('Map (waterproof sleeve)', 'Backpacking'), item('Compass', 'Backpacking'),
-        item('Water Bottles / Reservoir', 'Backpacking'), item('Water Filter / Purifier', 'Backpacking'),
-        item('Meals', 'Backpacking'), item('Energy Snacks', 'Backpacking'),
+        item('Water Bottle', 'Backpacking'), item('Water Filter / Purifier', 'Backpacking'),
+        item('Food / Meals', 'Backpacking'), item('Trail Snacks', 'Backpacking'),
         item('Extra Day\'s Food Supply', 'Backpacking'),
         item('Backpacking Stove', 'Backpacking'), item('Fuel', 'Backpacking'),
         item('Cookset', 'Backpacking'), item('Eating Utensils', 'Backpacking'),
@@ -196,7 +196,7 @@ function getActivityItems(activity: string, outfits: number): PackingItemDraft[]
       return [
         { name: 'Workout Clothes', category: 'Gym / Fitness', quantity: 2, isMustPack: false },
         item('Running Shoes', 'Gym / Fitness'), item('Gym Towel', 'Gym / Fitness'),
-        item('Headphones', 'Gym / Fitness'), item('Water Bottle', 'Gym / Fitness'),
+        item('Earbuds / Headphones', 'Gym / Fitness'), item('Water Bottle', 'Gym / Fitness'),
         item('Resistance Bands', 'Gym / Fitness'),
       ];
     case 'Skiing':
@@ -222,7 +222,7 @@ function getActivityItems(activity: string, outfits: number): PackingItemDraft[]
         item('Warmer Riding Gloves', 'Backcountry Skiing'),
         item('Extra Mid Layer', 'Backcountry Skiing'), item('Extra Base Layer', 'Backcountry Skiing'),
         item('Warm Hat', 'Backcountry Skiing'), item('Sunglasses', 'Backcountry Skiing'),
-        item('Goggles', 'Backcountry Skiing'),
+        item('Ski Goggles', 'Backcountry Skiing'),
         item('Navigation Equipment (Maps, GPS)', 'Backcountry Skiing'),
         item('First Aid Kit', 'Backcountry Skiing'), item('Repair Kit', 'Backcountry Skiing'),
         item('Headlamp', 'Backcountry Skiing'),
@@ -243,16 +243,16 @@ function getActivityItems(activity: string, outfits: number): PackingItemDraft[]
       ];
     case 'Concert':
       return [
-        item('Comfortable Shoes', 'Concert'), item('Earplugs', 'Concert'),
-        item('Portable Charger', 'Concert'), item('Light Jacket', 'Concert'),
-        item('Small Bag / Fanny Pack', 'Concert'),
+        item('Comfortable Walking Shoes', 'Concert'), item('Earplugs', 'Concert'),
+        item('Portable Charger / Power Bank', 'Concert'), item('Light Jacket', 'Concert'),
+        item('Fanny Pack', 'Concert'),
       ];
     case 'Festival':
       return [
-        item('Comfortable Shoes', 'Festival'), item('Sunscreen', 'Festival'),
-        item('Sun Hat', 'Festival'), item('Poncho / Rain Jacket', 'Festival'),
-        item('Fanny Pack', 'Festival'), item('Portable Charger', 'Festival'),
-        item('Hand Sanitizer', 'Festival'), item('Reusable Water Bottle', 'Festival'),
+        item('Comfortable Walking Shoes', 'Festival'), item('Sunscreen', 'Festival'),
+        item('Sun Hat', 'Festival'), item('Rain Jacket', 'Festival'),
+        item('Fanny Pack', 'Festival'), item('Portable Charger / Power Bank', 'Festival'),
+        item('Hand Sanitizer', 'Festival'), item('Water Bottle', 'Festival'),
         item('Earplugs', 'Festival'), item('Bandana', 'Festival'),
       ];
     default:

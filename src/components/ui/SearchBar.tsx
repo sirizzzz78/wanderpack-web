@@ -18,8 +18,8 @@ export function SearchBar({ value, onChange, placeholder = 'Search items...' }: 
         className="flex-1 bg-transparent text-[16px] text-[var(--text-primary)] outline-none"
       />
       {value && (
-        <button onClick={() => onChange('')} className="shrink-0">
-          <XCircle size={16} className="text-[var(--text-secondary)]" />
+        <button onClick={() => onChange('')} aria-label="Clear search" className="shrink-0 p-2 -m-1 rounded-full">
+          <XCircle size={18} className="text-[var(--text-secondary)]" />
         </button>
       )}
     </div>

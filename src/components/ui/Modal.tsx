@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useRef } from 'react';
+import { type ReactNode, useEffect, useRef, useCallback } from 'react';
 import { X } from 'lucide-react';
 
 interface ModalProps {
@@ -21,6 +21,38 @@ export function Modal({ open, onClose, children, title, showHandle = true }: Mod
     return () => { document.body.style.overflow = ''; };
   }, [open]);
 
+  // Escape key to close
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [open, onClose]);
+
+  // Focus trap
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key !== 'Tab' || !ref.current) return;
+    const focusable = ref.current.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }, []);
+
   if (!open) return null;
 
   return (
@@ -29,6 +61,10 @@ export function Modal({ open, onClose, children, title, showHandle = true }: Mod
         ref={ref}
         className="w-full max-w-lg bg-[var(--background)] rounded-t-[20px] max-h-[90dvh] overflow-y-auto transition-slide-up animate-slide-up"
         onClick={e => e.stopPropagation()}
+        onKeyDown={handleKeyDown}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
       >
         {showHandle && (
           <div className="flex justify-center pt-3 pb-2">
@@ -38,22 +74,13 @@ export function Modal({ open, onClose, children, title, showHandle = true }: Mod
         {title && (
           <div className="flex items-center justify-between px-5 pt-2 pb-4">
             <h2 className="text-[22px] font-semibold text-[var(--text-primary)]">{title}</h2>
-            <button onClick={onClose} className="p-2 rounded-full hover:bg-[var(--surface)]">
+            <button onClick={onClose} aria-label="Close" className="p-3 -m-1 rounded-full hover:bg-[var(--surface)]">
               <X size={18} className="text-[var(--text-secondary)]" />
             </button>
           </div>
         )}
         {children}
       </div>
-      <style>{`
-        @keyframes slide-up {
-          from { transform: translateY(100%); }
-          to { transform: translateY(0); }
-        }
-        .animate-slide-up {
-          animation: slide-up 0.3s cubic-bezier(0.32, 0.72, 0, 1);
-        }
-      `}</style>
     </div>
   );
 }

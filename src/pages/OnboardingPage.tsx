@@ -82,12 +82,17 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
       <div className="px-5 pb-12 pt-4 flex flex-col items-center gap-5">
         <div className="flex gap-2">
           {[0, 1].map(i => (
-            <div
+            <button
               key={i}
-              className={`h-1 rounded-full transition-all duration-300 ${
-                i === page ? 'w-5 bg-[var(--lavender)]' : 'w-2 bg-[var(--border)]'
+              onClick={() => setPage(i)}
+              className={`h-1 rounded-full transition-all duration-300 py-2 flex items-center ${
+                i === page ? 'w-5' : 'w-2'
               }`}
-            />
+            >
+              <div className={`h-1 w-full rounded-full ${
+                i === page ? 'bg-[var(--lavender)]' : 'bg-[var(--border)]'
+              }`} />
+            </button>
           ))}
         </div>
         <div className="w-full max-w-sm">

@@ -58,7 +58,7 @@ export function EditItemSheet({ item, existingCategories, onClose }: EditItemShe
                 <button
                   key={cat}
                   onClick={() => setCategory(cat)}
-                  className={`px-3 py-1.5 rounded-lg text-[13px] font-medium transition-colors ${
+                  className={`px-3.5 py-2.5 rounded-lg text-[13px] font-medium transition-colors ${
                     category === cat ? 'bg-[var(--lavender)] text-white' : 'text-[var(--lavender)]'
                   }`}
                   style={category !== cat ? { backgroundColor: 'color-mix(in srgb, var(--lavender) 12%, transparent)' } : {}}

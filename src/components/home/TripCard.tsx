@@ -85,9 +85,10 @@ export function TripCard({ trip, items, isPast, onDuplicate, onDelete, onFeedbac
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={e => { e.stopPropagation(); setMenuOpen(!menuOpen); }}
-                  className="p-1 rounded-full hover:bg-[var(--border)]"
+                  aria-label="Trip options"
+                  className="p-2.5 -m-1.5 rounded-full hover:bg-[var(--border)]"
                 >
-                  <MoreVertical size={14} className="text-[var(--text-secondary)]" />
+                  <MoreVertical size={16} className="text-[var(--text-secondary)]" />
                 </button>
                 {menuOpen && (
                   <div className="absolute right-0 top-8 z-20 bg-[var(--surface)] border border-[var(--border)] rounded-[10px] shadow-lg py-1 min-w-[160px]">

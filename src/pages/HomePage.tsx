@@ -1,12 +1,13 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Brain, Leaf, ChevronRight } from 'lucide-react';
+import { Plus, Brain, Leaf, ChevronRight, X } from 'lucide-react';
 import { useTrips, usePackingItems, deleteTrip, duplicateTrip } from '../db/hooks';
 import { usePackingItemsForTrips } from '../hooks/usePackingItemsForTrips';
 import { TripCard } from '../components/home/TripCard';
 import { MountainBackground } from '../components/home/MountainBackground';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { Modal } from '../components/ui/Modal';
+import { useToast } from '../components/ui/Toast';
 import { LearnedItemsSheet } from '../components/sheets/LearnedItemsSheet';
 import { PostTripFeedbackSheet } from '../components/sheets/PostTripFeedbackSheet';
 import { isBeforeToday } from '../lib/dateUtils';
@@ -18,9 +19,13 @@ export function HomePage() {
   const trips = useTrips();
   const allItems = usePackingItemsForTrips(trips);
 
+  const { showToast } = useToast();
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [showLearned, setShowLearned] = useState(false);
   const [feedbackTripId, setFeedbackTripId] = useState<string | null>(null);
+  const [dismissedFeedback, setDismissedFeedback] = useState<Set<string>>(
+    () => new Set(JSON.parse(localStorage.getItem('readiLi.dismissedFeedback') || '[]'))
+  );
 
   const today = useMemo(() => {
     const d = new Date();
@@ -43,20 +48,31 @@ export function HomePage() {
   );
 
   const feedbackTrip = useMemo(() =>
-    pastTrips.find(t => isBeforeToday(t.endDate) && !t.hasSubmittedFeedback),
-    [pastTrips]
+    pastTrips.find(t => isBeforeToday(t.endDate) && !t.hasSubmittedFeedback && !dismissedFeedback.has(t.id)),
+    [pastTrips, dismissedFeedback]
   );
+
+  const dismissFeedback = (tripId: string) => {
+    setDismissedFeedback(prev => {
+      const next = new Set(prev);
+      next.add(tripId);
+      localStorage.setItem('readiLi.dismissedFeedback', JSON.stringify([...next]));
+      return next;
+    });
+  };
 
   const handleDuplicate = async (tripId: string) => {
     const source = trips.find(t => t.id === tripId);
     if (!source) return;
     await duplicateTrip(source);
+    showToast('Trip duplicated', 'success');
   };
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
     await deleteTrip(deleteTarget);
     setDeleteTarget(null);
+    showToast('Trip deleted', 'success');
   };
 
   const deleteTargetTrip = trips.find(t => t.id === deleteTarget);
@@ -77,34 +93,47 @@ export function HomePage() {
             </h1>
             <button
               onClick={() => setShowLearned(true)}
-              className="w-9 h-9 flex items-center justify-center rounded-full"
+              aria-label="Learned items"
+              className="flex items-center gap-1.5 px-3 h-9 rounded-full"
               style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 12%, transparent)' }}
             >
-              <Brain size={18} className="text-[var(--lavender)]" />
+              <Brain size={16} className="text-[var(--lavender)]" />
+              <span className="text-[12px] font-semibold text-[var(--lavender)]">Learned</span>
             </button>
           </div>
 
           {/* Feedback nudge */}
           {feedbackTrip && (
-            <button
-              onClick={() => setFeedbackTripId(feedbackTrip.id)}
-              className="w-full mb-3 flex items-center gap-3.5 p-4 rounded-[14px] text-left"
+            <div
+              className="w-full mb-3 flex items-center gap-3.5 p-4 rounded-[14px]"
               style={{
                 backgroundColor: 'color-mix(in srgb, var(--salmon) 8%, transparent)',
                 border: '1px solid color-mix(in srgb, var(--salmon) 30%, transparent)',
               }}
             >
-              <Leaf size={24} className="text-[var(--salmon)] shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-[14px] font-semibold text-[var(--text-primary)]">
-                  How was {feedbackTrip.destination}?
-                </p>
-                <p className="text-[12px] text-[var(--text-secondary)]">
-                  Leave feedback to improve future lists
-                </p>
-              </div>
-              <ChevronRight size={12} className="text-[var(--text-secondary)] shrink-0" />
-            </button>
+              <button
+                onClick={() => setFeedbackTripId(feedbackTrip.id)}
+                className="flex items-center gap-3.5 flex-1 min-w-0 text-left"
+              >
+                <Leaf size={24} className="text-[var(--salmon)] shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-[14px] font-semibold text-[var(--text-primary)]">
+                    How was {feedbackTrip.destination}?
+                  </p>
+                  <p className="text-[12px] text-[var(--text-secondary)]">
+                    Leave feedback to improve future lists
+                  </p>
+                </div>
+                <ChevronRight size={12} className="text-[var(--text-secondary)] shrink-0" />
+              </button>
+              <button
+                onClick={() => dismissFeedback(feedbackTrip.id)}
+                aria-label="Dismiss feedback prompt"
+                className="p-2 -m-1 rounded-full shrink-0"
+              >
+                <X size={14} className="text-[var(--text-secondary)]" />
+              </button>
+            </div>
           )}
 
           {/* Empty state */}
@@ -116,7 +145,7 @@ export function HomePage() {
                   The trail starts here
                 </h2>
                 <p className="text-[15px] text-[var(--text-secondary)] mt-2">
-                  Tap + to plan your first trip. We'll handle the packing list.
+                  Create your first trip and we'll handle the packing list.
                 </p>
               </div>
             </div>
@@ -170,6 +199,7 @@ export function HomePage() {
       {/* FAB */}
       <button
         onClick={() => navigate('/setup')}
+        aria-label="Create new trip"
         className="fixed bottom-10 right-6 z-20 w-14 h-14 rounded-full bg-[var(--salmon)] flex items-center justify-center shadow-lg active:scale-95 transition-transform"
         style={{ boxShadow: '0 4px 12px color-mix(in srgb, var(--salmon) 30%, transparent)' }}
       >

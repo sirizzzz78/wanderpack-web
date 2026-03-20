@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { PlusCircle, XCircle } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
+import { useToast } from '../ui/Toast';
 import { useTrip, usePackingItems, updateTrip, removeLearnedItems, markUnused, learnItem } from '../../db/hooks';
 import { CATEGORY_OPTIONS } from '../../lib/constants';
 
@@ -11,6 +12,7 @@ interface PostTripFeedbackSheetProps {
 }
 
 export function PostTripFeedbackSheet({ tripId, onClose }: PostTripFeedbackSheetProps) {
+  const { showToast } = useToast();
   const trip = useTrip(tripId);
   const items = usePackingItems(tripId);
 
@@ -60,6 +62,7 @@ export function PostTripFeedbackSheet({ tripId, onClose }: PostTripFeedbackSheet
       await learnItem({ name: item.name, category: item.category, quantity: 1, isMustPack: false });
     }
 
+    showToast('Feedback saved — thanks!', 'success');
     onClose();
   };
 
@@ -80,7 +83,7 @@ export function PostTripFeedbackSheet({ tripId, onClose }: PostTripFeedbackSheet
                 <button
                   key={name}
                   onClick={() => toggleUnpacked(name)}
-                  className={`px-3 py-1.5 rounded-[12px] text-[13px] font-medium border border-[var(--border)] transition-colors ${
+                  className={`px-3.5 py-2.5 rounded-[12px] text-[13px] font-medium border border-[var(--border)] transition-colors ${
                     selected ? 'bg-[var(--lavender)] text-white border-transparent' : 'bg-[var(--surface)] text-[var(--text-primary)]'
                   }`}
                 >
@@ -105,17 +108,26 @@ export function PostTripFeedbackSheet({ tripId, onClose }: PostTripFeedbackSheet
             placeholder="Item name"
             className="flex-1 bg-transparent text-[15px] text-[var(--text-primary)] outline-none min-w-0"
           />
-          <select
-            value={newCategory}
-            onChange={e => setNewCategory(e.target.value)}
-            className="bg-transparent text-[13px] text-[var(--lavender)] outline-none"
-          >
-            {CATEGORY_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-          <button onClick={addWishlist} disabled={!newName.trim()}>
+          <button onClick={addWishlist} disabled={!newName.trim()} aria-label="Add wishlist item">
             <PlusCircle size={24} className={newName.trim() ? 'text-[var(--lavender)]' : 'text-[var(--border)]'} />
           </button>
         </Card>
+        <div className="flex flex-wrap gap-1.5 mt-2">
+          {CATEGORY_OPTIONS.map(c => (
+            <button
+              key={c}
+              onClick={() => setNewCategory(c)}
+              className={`px-2.5 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${
+                newCategory === c
+                  ? 'bg-[var(--lavender)] text-white'
+                  : 'text-[var(--lavender)]'
+              }`}
+              style={newCategory !== c ? { backgroundColor: 'color-mix(in srgb, var(--lavender) 12%, transparent)' } : {}}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
         {wishlistItems.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-2">
             {wishlistItems.map((item, i) => (

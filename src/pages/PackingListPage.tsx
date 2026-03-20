@@ -5,6 +5,7 @@ import {
   CheckCircle2, Circle, Star, Trash2, AlertCircle, BadgeCheck,
   Search, XCircle, Loader2,
 } from 'lucide-react';
+import { useToast } from '../components/ui/Toast';
 import { useTrip, usePackingItems, togglePacked, deletePackingItem, updatePackingItem, getTripDays, getFormattedDateRange } from '../db/hooks';
 import { Card } from '../components/ui/Card';
 import { ProgressBar } from '../components/ui/ProgressBar';
@@ -29,6 +30,7 @@ export function PackingListPage() {
   const trip = useTrip(id);
   const items = usePackingItems(id);
 
+  const { showToast } = useToast();
   const [searchText, setSearchText] = useState('');
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [initialized, setInitialized] = useState(false);
@@ -113,7 +115,11 @@ export function PackingListPage() {
         if (!cancelled) { setWeather(w); setWeatherLoading(false); }
       } catch (e: any) {
         if (!cancelled) {
-          if (e?.message === 'outsideForecastWindow') setWeatherOutOfRange(true);
+          if (e?.message === 'outsideForecastWindow') {
+            setWeatherOutOfRange(true);
+          } else {
+            showToast("Couldn't load weather forecast", 'info');
+          }
           setWeatherLoading(false);
         }
       }
@@ -156,8 +162,38 @@ export function PackingListPage() {
       navigator.share({ text }).catch(() => {});
     } else {
       navigator.clipboard.writeText(text);
+      showToast('Copied to clipboard', 'success');
     }
   }, [trip, items, groupedItems]);
+
+  // undefined = still loading, null would mean not found, but useLiveQuery returns undefined for both
+  // We detect "not found" by checking if id is present but trip hasn't loaded after items query resolves
+  const tripNotFound = id && trip === undefined && items.length === 0 && initialized === false;
+  const [loadTimeout, setLoadTimeout] = useState(false);
+
+  useEffect(() => {
+    if (trip || !id) return;
+    const timer = setTimeout(() => setLoadTimeout(true), 2000);
+    return () => clearTimeout(timer);
+  }, [trip, id]);
+
+  if (!trip && loadTimeout) {
+    return (
+      <div className="min-h-dvh flex flex-col items-center justify-center bg-[var(--background)] px-5 gap-4">
+        <AlertCircle size={48} className="text-[var(--text-secondary)] opacity-50" />
+        <h2 className="text-[20px] font-semibold text-[var(--text-primary)]">Trip not found</h2>
+        <p className="text-[15px] text-[var(--text-secondary)] text-center">
+          This trip may have been deleted or the link is invalid.
+        </p>
+        <button
+          onClick={() => navigate('/')}
+          className="mt-4 px-6 py-3 rounded-[20px] bg-[var(--lavender)] text-white text-[15px] font-semibold"
+        >
+          Back to My Trips
+        </button>
+      </div>
+    );
+  }
 
   if (!trip) {
     return (
@@ -171,15 +207,15 @@ export function PackingListPage() {
     <div className="min-h-dvh bg-[var(--background)]">
       {/* Nav bar */}
       <div className="sticky top-0 z-20 bg-[var(--background)] px-5 pt-4 pb-2 flex items-center justify-between">
-        <button onClick={() => navigate('/')} className="p-1">
+        <button onClick={() => navigate('/')} aria-label="Back to trips" className="p-1">
           <ChevronLeft size={24} className="text-[var(--lavender)]" />
         </button>
         <h1 className="text-[17px] font-semibold text-[var(--text-primary)] truncate mx-3">
           {trip.destination}
         </h1>
         <div className="flex items-center gap-3">
-          <button onClick={handleShare}><Share size={18} className="text-[var(--lavender)]" /></button>
-          <button onClick={() => setShowEditTrip(true)}><Pencil size={18} className="text-[var(--lavender)]" /></button>
+          <button onClick={handleShare} aria-label="Share packing list"><Share size={18} className="text-[var(--lavender)]" /></button>
+          <button onClick={() => setShowEditTrip(true)} aria-label="Edit trip"><Pencil size={18} className="text-[var(--lavender)]" /></button>
         </div>
       </div>
 
@@ -246,9 +282,7 @@ export function PackingListPage() {
         )}
 
         {/* Search */}
-        {(items.length > 10 || searchText) && (
-          <SearchBar value={searchText} onChange={setSearchText} />
-        )}
+        <SearchBar value={searchText} onChange={setSearchText} />
 
         {/* Must Pack */}
         {(mustPackItems.length > 0 || true) && (
@@ -259,6 +293,7 @@ export function PackingListPage() {
               </span>
               <button
                 onClick={() => { setAddAsMustPack(true); setAddCategory(''); setShowAddSheet(true); }}
+                aria-label="Add must-pack item"
                 className="w-7 h-7 flex items-center justify-center rounded-full"
                 style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 12%, transparent)' }}
               >
@@ -311,20 +346,8 @@ export function PackingListPage() {
                   <ChevronDown size={11} className={`text-[var(--text-secondary)] transition-transform ${isExpanded ? '' : '-rotate-90'}`} />
                 </button>
                 <button
-                  onClick={async () => {
-                    const allPackedState = catItems.every(i => i.isPacked);
-                    for (const item of catItems) {
-                      await togglePacked(item.id, !allPackedState);
-                    }
-                  }}
-                  className="w-8 h-8 flex items-center justify-center"
-                >
-                  {catItems.every(i => i.isPacked)
-                    ? <CheckCircle2 size={15} className="text-[var(--lavender)]" />
-                    : <Circle size={15} className="text-[var(--text-secondary)]" />}
-                </button>
-                <button
                   onClick={() => { setAddAsMustPack(false); setAddCategory(category); setShowAddSheet(true); }}
+                  aria-label={`Add item to ${category}`}
                   className="w-7 h-7 flex items-center justify-center rounded-full"
                   style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 12%, transparent)' }}
                 >
@@ -400,6 +423,7 @@ export function PackingListPage() {
         onConfirm={async () => {
           if (deleteTarget) await deletePackingItem(deleteTarget);
           setDeleteTarget(null);
+          showToast('Item deleted', 'success');
         }}
         onCancel={() => setDeleteTarget(null)}
         confirmLabel="Delete"
@@ -438,7 +462,7 @@ function ItemRow({
           <p className="text-[12px] text-[var(--text-secondary)]">&times;{item.quantity}</p>
         )}
         {unused && (
-          <p className="text-[12px] text-[var(--salmon)]">Not used last trip</p>
+          <p className="text-[12px] text-[var(--salmon)] cursor-help" title="Based on your feedback from a previous trip">Not used last trip</p>
         )}
         {restricted && (
           <p className="text-[11px] font-medium text-[var(--salmon)] flex items-center gap-1">
@@ -452,10 +476,10 @@ function ItemRow({
       {!isMustPack && item.isMustPack && (
         <Star size={11} className="text-[var(--lavender)] shrink-0" fill="var(--lavender)" />
       )}
-      <button onClick={onEdit} className="p-1.5 rounded-full hover:bg-[var(--border)]">
+      <button onClick={onEdit} aria-label={`Edit ${item.name}`} className="p-1.5 rounded-full hover:bg-[var(--border)]">
         <Pencil size={14} className="text-[var(--text-secondary)]" />
       </button>
-      <button onClick={onDelete} className="p-1.5 rounded-full hover:bg-[var(--border)]">
+      <button onClick={onDelete} aria-label={`Delete ${item.name}`} className="p-1.5 rounded-full hover:bg-[var(--border)]">
         <Trash2 size={14} className="text-[var(--destructive)]" />
       </button>
     </div>

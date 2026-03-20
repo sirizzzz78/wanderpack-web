@@ -45,8 +45,12 @@ export async function fetchWeather(
   }
 
   // Geocode using Open-Meteo geocoding API
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+
+  try {
   const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(destination)}&count=1&language=en&format=json`;
-  const geoRes = await fetch(geoUrl);
+  const geoRes = await fetch(geoUrl, { signal: controller.signal });
   const geoData = await geoRes.json();
 
   if (!geoData.results?.length) {
@@ -59,7 +63,7 @@ export async function fetchWeather(
   const fmt = (d: Date) => d.toISOString().split('T')[0];
   const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude.toFixed(4)}&longitude=${longitude.toFixed(4)}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&start_date=${fmt(windowStart)}&end_date=${fmt(windowEnd)}&timezone=auto`;
 
-  const res = await fetch(forecastUrl);
+  const res = await fetch(forecastUrl, { signal: controller.signal });
   const data = await res.json();
 
   const daily = data.daily;
@@ -99,6 +103,9 @@ export async function fetchWeather(
   cache.set(cacheKey, { summary, fetched: Date.now() });
 
   return summary;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export function weatherCondition(code: number): string {

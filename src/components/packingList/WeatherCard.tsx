@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Umbrella } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { LucideIcon } from '../ui/LucideIcon';
@@ -9,11 +10,12 @@ interface WeatherCardProps {
 }
 
 function symbolColor(code: number): string {
-  if (code <= 1) return 'var(--salmon)';
+  // P4: sunny = amber, cloudy = secondary, rain = lavender, snow/storm = salmon
+  if (code <= 1) return '#D4A020';   // amber for clear/sunny
   if (code <= 3) return 'var(--text-secondary)';
   if (code >= 51 && code <= 65) return 'var(--lavender)';
-  if (code >= 71 && code <= 86) return 'var(--salmon)';
-  if (code >= 95) return 'var(--salmon)';
+  if (code >= 71 && code <= 86) return 'var(--lavender)';
+  if (code >= 95) return 'var(--salmon)';  // storms only
   return 'var(--text-secondary)';
 }
 
@@ -22,10 +24,14 @@ function formatTemp(celsius: number, fahrenheit: boolean): string {
   return `${Math.round(celsius)}°C`;
 }
 
-export function WeatherCardComponent({ summary }: WeatherCardProps) {
-  // Auto-detect Fahrenheit preference
-  const fahrenheit = typeof navigator !== 'undefined' &&
+function detectDefaultUnit(): boolean {
+  return typeof navigator !== 'undefined' &&
     (navigator.language?.startsWith('en-US') || Intl.DateTimeFormat().resolvedOptions().locale?.includes('US'));
+}
+
+export function WeatherCardComponent({ summary }: WeatherCardProps) {
+  // P5: F/C toggle with auto-detect default
+  const [fahrenheit, setFahrenheit] = useState(detectDefaultUnit);
 
   return (
     <Card className="p-4">
@@ -38,10 +44,20 @@ export function WeatherCardComponent({ summary }: WeatherCardProps) {
             Trip Forecast
           </span>
         </div>
-        <span className="text-[12px] font-medium text-[var(--lavender)] px-2 py-0.5 rounded-[12px]"
-          style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 12%, transparent)' }}>
-          {weatherCondition(summary.dominantWeatherCode)}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-[12px] font-medium text-[var(--lavender)] px-2 py-0.5 rounded-[12px]"
+            style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 12%, transparent)' }}>
+            {weatherCondition(summary.dominantWeatherCode)}
+          </span>
+          <button
+            onClick={() => setFahrenheit(f => !f)}
+            aria-label={`Switch to ${fahrenheit ? 'Celsius' : 'Fahrenheit'}`}
+            className="text-[12px] font-semibold text-[var(--lavender)] px-2 py-0.5 rounded-[12px] hover:opacity-80 transition-opacity"
+            style={{ backgroundColor: 'color-mix(in srgb, var(--lavender) 12%, transparent)' }}
+          >
+            {fahrenheit ? '°C' : '°F'}
+          </button>
+        </div>
       </div>
 
       {/* Temps */}
