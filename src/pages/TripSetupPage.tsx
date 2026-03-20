@@ -509,7 +509,7 @@ export function TripSetupPage() {
       )}
 
       {/* Navigation buttons */}
-      <div className="px-6 pb-8 pt-2 flex gap-3">
+      <div className="px-6 pt-2 flex gap-3" style={{ paddingBottom: 'max(2.5rem, env(safe-area-inset-bottom, 2.5rem))' }}>
         {step > 1 && (
           <Button variant="ghost" onClick={() => setStep(step - 1)}>Back</Button>
         )}
