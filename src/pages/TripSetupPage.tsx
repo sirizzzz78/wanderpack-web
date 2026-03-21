@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, MapPin, House, Globe, Plane, TrainFront, Car, PlaneTakeoff, PlaneLanding, Calendar, Clock, Repeat, CheckCircle2, Loader2, AlertTriangle } from 'lucide-react';
+import { X, House, Globe, Plane, TrainFront, Car, PlaneTakeoff, PlaneLanding, Calendar, Clock, Repeat, CheckCircle2, Loader2, AlertTriangle } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Toggle } from '../components/ui/Toggle';
 import { LucideIcon } from '../components/ui/LucideIcon';
+import { LocationInput } from '../components/ui/LocationInput';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { useToast } from '../components/ui/Toast';
 import { ACTIVITY_LIST, EVENT_LIST, ALL_ACTIVITIES, TRANSPORTS } from '../lib/constants';
@@ -229,17 +230,9 @@ export function TripSetupPage() {
           <div style={{ padding: '1.5rem var(--page-px) 1.5rem' }}>
             <h2 className="font-semibold text-[var(--text-primary)]" style={{ fontSize: 'var(--text-page-title)' }}>Where are you headed?</h2>
             <p className="text-[var(--text-secondary)]" style={{ fontSize: 'var(--text-body-sm)', marginTop: 'var(--step-heading-gap)' }}>Enter your destination city or country.</p>
-            <Card className="flex items-center gap-3" style={{ marginTop: 'var(--step-content-gap)' }}>
-              <MapPin size={18} className="text-[var(--lavender)] shrink-0" />
-              <input
-                type="text"
-                value={destination}
-                onChange={e => setDestination(e.target.value)}
-                placeholder="e.g. Tokyo, Japan"
-                className="flex-1 bg-transparent text-[16px] text-[var(--text-primary)] outline-none"
-                autoFocus
-              />
-            </Card>
+            <div style={{ marginTop: 'var(--step-content-gap)' }}>
+              <LocationInput value={destination} onChange={setDestination} autoFocus />
+            </div>
             {/* S1: Destination validation */}
             {destinationWarning && (
               <p className="flex items-center gap-1.5 text-[13px] text-[var(--salmon)] mt-2 px-1">

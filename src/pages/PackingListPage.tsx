@@ -432,14 +432,14 @@ export function PackingListPage() {
         open={!!deleteTarget}
         title="Delete Item?"
         message="This item will be removed from your packing list."
-        onConfirm={async () => {
-          try {
-            if (deleteTarget) await deletePackingItem(deleteTarget);
-            showToast('Item deleted', 'success');
-          } catch {
-            showToast('Failed to delete item', 'info');
-          }
+        onConfirm={() => {
+          const targetId = deleteTarget;
           setDeleteTarget(null);
+          if (targetId) {
+            deletePackingItem(targetId)
+              .then(() => showToast('Item deleted', 'success'))
+              .catch(() => showToast('Failed to delete item', 'info'));
+          }
         }}
         onCancel={() => setDeleteTarget(null)}
         confirmLabel="Delete"

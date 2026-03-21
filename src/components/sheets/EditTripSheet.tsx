@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { MapPin, PlaneTakeoff, PlaneLanding, Clock, House, Globe, Car, TrainFront, Plane, Repeat } from 'lucide-react';
+import { PlaneTakeoff, PlaneLanding, Clock, House, Globe, Car, TrainFront, Plane, Repeat } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { Toggle } from '../ui/Toggle';
 import { LucideIcon } from '../ui/LucideIcon';
+import { LocationInput } from '../ui/LocationInput';
 import { useToast } from '../ui/Toast';
 import { ACTIVITY_LIST, EVENT_LIST, TRANSPORTS } from '../../lib/constants';
 import { toISODate, addDays, getDatesInRange } from '../../lib/dateUtils';
@@ -115,11 +116,7 @@ export function EditTripSheet({ trip, onClose }: EditTripSheetProps) {
     <div className="px-6 pb-8 max-h-[70dvh] overflow-y-auto">
       <div className="flex flex-col gap-5">
         {/* Destination */}
-        <Card className="flex items-center gap-3">
-          <MapPin size={18} className="text-[var(--lavender)] shrink-0" />
-          <input type="text" value={destination} onChange={e => setDestination(e.target.value)}
-            className="flex-1 bg-transparent text-[16px] text-[var(--text-primary)] outline-none" placeholder="Destination" />
-        </Card>
+        <LocationInput value={destination} onChange={setDestination} placeholder="Destination" />
 
         {/* Dates */}
         <div className="flex flex-col gap-2">
