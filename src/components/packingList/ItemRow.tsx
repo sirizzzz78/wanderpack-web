@@ -22,7 +22,7 @@ export const ItemRow = memo(function ItemRow({
 
   return (
     <div className="flex items-center gap-3" style={{ padding: 'var(--card-px)' }}>
-      <button onClick={() => togglePacked(item.id, !item.isPacked)} className="p-1 -m-1">
+      <button onClick={() => { togglePacked(item.id, !item.isPacked).catch(() => {}); }} className="p-1 -m-1">
         {item.isPacked
           ? <CheckCircle2 size={22} className="text-[var(--salmon)]" />
           : <Circle size={22} className="text-[var(--lavender)] opacity-40" />}

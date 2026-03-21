@@ -64,15 +64,23 @@ export function HomePage() {
   const handleDuplicate = useCallback(async (tripId: string) => {
     const source = trips.find(t => t.id === tripId);
     if (!source) return;
-    await duplicateTrip(source);
-    showToast('Trip duplicated', 'success');
+    try {
+      await duplicateTrip(source);
+      showToast('Trip duplicated', 'success');
+    } catch {
+      showToast('Failed to duplicate trip', 'info');
+    }
   }, [trips, showToast]);
 
   const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
-    await deleteTrip(deleteTarget);
+    try {
+      await deleteTrip(deleteTarget);
+      showToast('Trip deleted', 'success');
+    } catch {
+      showToast('Failed to delete trip', 'info');
+    }
     setDeleteTarget(null);
-    showToast('Trip deleted', 'success');
   }, [deleteTarget, showToast]);
 
   const deleteTargetTrip = trips.find(t => t.id === deleteTarget);

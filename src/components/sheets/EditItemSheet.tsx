@@ -22,14 +22,16 @@ export function EditItemSheet({ item, existingCategories, onClose }: EditItemShe
   const canSave = name.trim().length > 0;
 
   const handleSave = async () => {
-    const resolvedCategory = isMustPack ? 'Essentials' : category.trim();
-    await updatePackingItem(item.id, {
-      name: name.trim(),
-      category: resolvedCategory,
-      quantity,
-      isMustPack,
-    });
-    onClose();
+    try {
+      const resolvedCategory = isMustPack ? 'Essentials' : category.trim();
+      await updatePackingItem(item.id, {
+        name: name.trim(),
+        category: resolvedCategory,
+        quantity,
+        isMustPack,
+      });
+      onClose();
+    } catch { /* DB error handled gracefully */ }
   };
 
   const categories = existingCategories.filter(c => c !== 'Essentials' || !isMustPack);

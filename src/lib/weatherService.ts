@@ -81,6 +81,7 @@ async function fetchWeatherInner(
     try {
       const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(destination)}&count=1&language=en&format=json`;
       const geoRes = await fetch(geoUrl, { signal: controller.signal });
+      if (!geoRes.ok) throw new Error('geocodingFailed');
       const geoData = await geoRes.json();
 
       if (!geoData.results?.length) {
@@ -93,9 +94,13 @@ async function fetchWeatherInner(
       const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude.toFixed(4)}&longitude=${longitude.toFixed(4)}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&start_date=${fmt(windowStart)}&end_date=${fmt(windowEnd)}&timezone=auto`;
 
       const res = await fetch(forecastUrl, { signal: controller.signal });
+      if (!res.ok) throw new Error('invalidWeatherResponse');
       const data = await res.json();
 
-      const daily = data.daily;
+      const daily = data?.daily;
+      if (!daily?.time?.length || !daily?.temperature_2m_max?.length) {
+        throw new Error('invalidWeatherResponse');
+      }
       const forecasts: DailyForecast[] = [];
 
       for (let i = 0; i < daily.time.length; i++) {
@@ -141,7 +146,7 @@ async function fetchWeatherInner(
     return await doFetch();
   } catch (e: any) {
     // Retry once after 2s on transient failures (not aborts or known errors)
-    if (e?.name === 'AbortError' || e?.message === 'geocodingFailed' || e?.message === 'outsideForecastWindow') {
+    if (e?.name === 'AbortError' || e?.message === 'geocodingFailed' || e?.message === 'outsideForecastWindow' || e?.message === 'invalidWeatherResponse') {
       throw e;
     }
     await new Promise(r => setTimeout(r, 2000));

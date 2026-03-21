@@ -49,21 +49,25 @@ export function PostTripFeedbackSheet({ tripId, onClose }: PostTripFeedbackSheet
   };
 
   const handleSave = async () => {
-    await updateTrip(trip.id, {
-      hasSubmittedFeedback: true,
-      feedbackUnpacked: [...unpackedSelections],
-      feedbackWishlist: wishlistItems.map(w => w.name).join(', '),
-    });
+    try {
+      await updateTrip(trip.id, {
+        hasSubmittedFeedback: true,
+        feedbackUnpacked: [...unpackedSelections],
+        feedbackWishlist: wishlistItems.map(w => w.name).join(', '),
+      });
 
-    await removeLearnedItems([...unpackedSelections]);
-    markUnused([...unpackedSelections]);
+      await removeLearnedItems([...unpackedSelections]);
+      markUnused([...unpackedSelections]);
 
-    for (const item of wishlistItems) {
-      await learnItem({ name: item.name, category: item.category, quantity: 1, isMustPack: false });
+      for (const item of wishlistItems) {
+        await learnItem({ name: item.name, category: item.category, quantity: 1, isMustPack: false });
+      }
+
+      showToast('Feedback saved — thanks!', 'success');
+      onClose();
+    } catch {
+      showToast('Failed to save feedback', 'info');
     }
-
-    showToast('Feedback saved — thanks!', 'success');
-    onClose();
   };
 
   return (

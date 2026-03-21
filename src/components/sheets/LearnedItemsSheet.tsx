@@ -79,7 +79,9 @@ export function LearnedItemsSheet({ onClose }: LearnedItemsSheetProps) {
         message={deleteTarget ? `"${deleteTarget}" will no longer be added to future trips automatically.` : ''}
         confirmLabel="Remove"
         onConfirm={async () => {
-          if (deleteTarget) await removeLearnedItems([deleteTarget]);
+          try {
+            if (deleteTarget) await removeLearnedItems([deleteTarget]);
+          } catch { /* silently handled */ }
           setDeleteTarget(null);
         }}
         onCancel={() => setDeleteTarget(null)}
