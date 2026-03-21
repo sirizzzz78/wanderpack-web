@@ -118,6 +118,13 @@ export function AddItemSheet({ tripId, existingCategories, preselectedCategory, 
 
       <div className="mt-6">
         <Button onClick={handleAdd} disabled={!canAdd || saving}>{saving ? 'Adding...' : 'Add to List'}</Button>
+        {!canAdd && (
+          <p className="text-[12px] text-[var(--text-secondary)] text-center mt-2.5">
+            {name.trim().length === 0
+              ? 'Enter an item name to continue'
+              : 'Select or enter a category'}
+          </p>
+        )}
       </div>
     </div>
   );
