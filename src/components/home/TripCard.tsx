@@ -38,7 +38,7 @@ export const TripCard = memo(function TripCard({ trip, items, isPast, onDuplicat
 
   return (
     <div
-      className={`rounded-[14px] border border-[var(--border)] overflow-hidden cursor-pointer transition-transform active:scale-[0.99] ${
+      className={`rounded-[14px] border border-[var(--border)] cursor-pointer transition-transform active:scale-[0.99] ${
         isPast ? 'bg-[var(--surface-past)]' : 'bg-[var(--surface)]'
       }`}
       onClick={() => navigate(`/trip/${trip.id}`)}
