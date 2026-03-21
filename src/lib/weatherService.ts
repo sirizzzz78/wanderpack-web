@@ -76,7 +76,7 @@ export async function fetchWeather(
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const horizon = new Date(today);
-  horizon.setDate(horizon.getDate() + 16);
+  horizon.setDate(horizon.getDate() + 14);
 
   const start = new Date(tripStart);
   const end = new Date(tripEnd);
