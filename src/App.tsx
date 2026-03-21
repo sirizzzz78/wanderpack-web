@@ -8,10 +8,28 @@ import { useTrips } from './db/hooks';
 import { checkAndNotify } from './lib/notifications';
 import { checkStorageQuota } from './lib/storageCheck';
 
-const TripSetupPage = lazy(() =>
+// Retry dynamic imports once with a full page reload on chunk load failure
+// (happens after deploys when the service worker serves stale asset references)
+function lazyWithRetry(factory: () => Promise<{ default: React.ComponentType }>) {
+  return lazy(() =>
+    factory().catch(() => {
+      // Chunk failed to load — likely stale SW cache after a deploy.
+      // Reload once; the flag prevents infinite reload loops.
+      const key = 'readiLi.chunkReload';
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, '1');
+        window.location.reload();
+      }
+      // If we already reloaded and it still fails, surface the error
+      return factory();
+    })
+  );
+}
+
+const TripSetupPage = lazyWithRetry(() =>
   import('./pages/TripSetupPage').then(m => ({ default: m.TripSetupPage }))
 );
-const PackingListPage = lazy(() =>
+const PackingListPage = lazyWithRetry(() =>
   import('./pages/PackingListPage').then(m => ({ default: m.PackingListPage }))
 );
 
@@ -37,6 +55,11 @@ export function App() {
       checkAndNotify(trips);
     }
   }, [hasSeenOnboarding, trips]);
+
+  // Clear chunk-reload flag on successful load
+  useEffect(() => {
+    sessionStorage.removeItem('readiLi.chunkReload');
+  }, []);
 
   // Storage quota check
   useEffect(() => {

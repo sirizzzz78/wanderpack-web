@@ -17,6 +17,19 @@ export class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
+  componentDidCatch(error: Error) {
+    // Auto-reload on chunk load failures (stale SW cache after deploy)
+    const isChunkError =
+      error.message?.includes('Failed to fetch dynamically imported module') ||
+      error.message?.includes('Loading chunk') ||
+      error.message?.includes('Loading CSS chunk');
+    const key = 'readiLi.chunkReload';
+    if (isChunkError && !sessionStorage.getItem(key)) {
+      sessionStorage.setItem(key, '1');
+      window.location.reload();
+    }
+  }
+
   handleRetry = () => {
     this.setState({ hasError: false, error: null });
   };
