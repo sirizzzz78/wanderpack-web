@@ -38,6 +38,7 @@ export function PackingListPage() {
   const [weather, setWeather] = useState<WeatherSummary | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(true);
   const [weatherOutOfRange, setWeatherOutOfRange] = useState(false);
+  const [weatherError, setWeatherError] = useState(false);
 
   // Modals
   const [showAddSheet, setShowAddSheet] = useState(false);
@@ -109,6 +110,10 @@ export function PackingListPage() {
   // Load weather with AbortController
   useEffect(() => {
     if (!trip) return;
+    setWeather(null);
+    setWeatherLoading(true);
+    setWeatherOutOfRange(false);
+    setWeatherError(false);
     const abortController = new AbortController();
     (async () => {
       try {
@@ -119,7 +124,7 @@ export function PackingListPage() {
         if (e?.message === 'outsideForecastWindow') {
           setWeatherOutOfRange(true);
         } else {
-          showToast("Couldn't load weather forecast", 'info');
+          setWeatherError(true);
         }
         setWeatherLoading(false);
       }
@@ -269,6 +274,15 @@ export function PackingListPage() {
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-[var(--blue-faint)]">Trip Forecast</p>
               <p className="text-[12px] text-[var(--text-secondary)]">Forecast available closer to your trip.</p>
+            </div>
+          </Card>
+        )}
+        {weatherError && (
+          <Card className="flex items-center gap-3">
+            <LucideIcon name="cloud-off" size={20} className="text-[var(--text-secondary)] opacity-50" />
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-[var(--blue-faint)]">Trip Forecast</p>
+              <p className="text-[12px] text-[var(--text-secondary)]">Couldn't load forecast. Check your connection and try again.</p>
             </div>
           </Card>
         )}

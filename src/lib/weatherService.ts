@@ -22,6 +22,12 @@ const CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours
 // Debounce: track pending fetches by cache key
 const pendingFetches = new Map<string, Promise<WeatherSummary>>();
 
+/** @internal — exposed for tests only */
+export function _clearCache() {
+  cache.clear();
+  pendingFetches.clear();
+}
+
 export async function fetchWeather(
   destination: string,
   tripStart: string,
@@ -69,15 +75,22 @@ async function fetchWeatherInner(
   cacheKey: string,
   signal?: AbortSignal
 ): Promise<WeatherSummary> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
-
-  // Chain external signal to our controller
+  // Track whether the *external* caller aborted (vs our internal timeout)
+  let callerAborted = signal?.aborted ?? false;
   if (signal) {
-    signal.addEventListener('abort', () => controller.abort(), { once: true });
+    signal.addEventListener('abort', () => { callerAborted = true; }, { once: true });
   }
 
   const doFetch = async (): Promise<WeatherSummary> => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
+    // Chain external signal to our controller
+    if (signal) {
+      if (signal.aborted) { clearTimeout(timeout); throw new DOMException('Aborted', 'AbortError'); }
+      signal.addEventListener('abort', () => controller.abort(), { once: true });
+    }
+
     try {
       const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(destination)}&count=1&language=en&format=json`;
       const geoRes = await fetch(geoUrl, { signal: controller.signal });
@@ -145,10 +158,13 @@ async function fetchWeatherInner(
   try {
     return await doFetch();
   } catch (e: any) {
-    // Retry once after 2s on transient failures (not aborts or known errors)
-    if (e?.name === 'AbortError' || e?.message === 'geocodingFailed' || e?.message === 'outsideForecastWindow' || e?.message === 'invalidWeatherResponse') {
+    // If the *caller* aborted (component unmount), don't retry
+    if (callerAborted) throw e;
+    // Don't retry known permanent failures
+    if (e?.message === 'geocodingFailed' || e?.message === 'outsideForecastWindow' || e?.message === 'invalidWeatherResponse') {
       throw e;
     }
+    // Retry once after 2s on transient failures (timeout, network errors)
     await new Promise(r => setTimeout(r, 2000));
     return await doFetch();
   }
