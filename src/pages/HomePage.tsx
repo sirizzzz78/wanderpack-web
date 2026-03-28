@@ -35,14 +35,14 @@ export function HomePage() {
 
   const upcomingTrips = useMemo(() =>
     trips
-      .filter(t => new Date(t.startDate) >= today)
+      .filter(t => new Date(t.endDate) >= today)
       .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()),
     [trips, today]
   );
 
   const pastTrips = useMemo(() =>
     trips
-      .filter(t => new Date(t.startDate) < today)
+      .filter(t => new Date(t.endDate) < today)
       .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()),
     [trips, today]
   );
@@ -113,34 +113,33 @@ export function HomePage() {
           {/* Feedback nudge */}
           {feedbackTrip && (
             <div
-              className="w-full mb-3 flex items-center gap-3.5 p-4 rounded-[14px]"
-              style={{
-                backgroundColor: 'color-mix(in srgb, var(--salmon) 8%, transparent)',
-                border: '1px solid color-mix(in srgb, var(--salmon) 30%, transparent)',
-              }}
+              className="w-full mb-3 rounded-[14px] border border-[var(--border)] bg-[var(--surface)]"
+              style={{ padding: '14px var(--card-px)' }}
             >
-              <button
-                onClick={() => setFeedbackTripId(feedbackTrip.id)}
-                className="flex items-center gap-3.5 flex-1 min-w-0 text-left"
-              >
-                <Leaf size={24} className="text-[var(--salmon)] shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-[14px] font-semibold text-[var(--text-primary)]">
-                    How was {feedbackTrip.destination}?
-                  </p>
-                  <p className="text-[12px] text-[var(--text-secondary)]">
-                    Leave feedback to improve future lists
-                  </p>
-                </div>
-                <ChevronRight size={12} className="text-[var(--text-secondary)] shrink-0" />
-              </button>
-              <button
-                onClick={() => dismissFeedback(feedbackTrip.id)}
-                aria-label="Dismiss feedback prompt"
-                className="p-2 -m-1 rounded-full shrink-0"
-              >
-                <X size={14} className="text-[var(--text-secondary)]" />
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setFeedbackTripId(feedbackTrip.id)}
+                  className="flex items-center gap-3 flex-1 min-w-0 text-left"
+                >
+                  <Leaf size={20} className="text-[var(--salmon)] shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-[var(--text-primary)]" style={{ fontSize: 'var(--text-card-title)' }}>
+                      How was {feedbackTrip.destination}?
+                    </p>
+                    <p className="text-[13px] text-[var(--text-secondary)] mt-0.5">
+                      Leave feedback to improve future lists
+                    </p>
+                  </div>
+                  <ChevronRight size={14} className="text-[var(--text-secondary)] shrink-0" />
+                </button>
+                <button
+                  onClick={() => dismissFeedback(feedbackTrip.id)}
+                  aria-label="Dismiss feedback prompt"
+                  className="p-2 -m-1 rounded-full shrink-0"
+                >
+                  <X size={14} className="text-[var(--text-secondary)]" />
+                </button>
+              </div>
             </div>
           )}
 

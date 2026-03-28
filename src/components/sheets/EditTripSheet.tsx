@@ -119,7 +119,7 @@ export function EditTripSheet({ trip, onClose }: EditTripSheetProps) {
   };
 
   return (
-    <div className="px-6 pb-8 max-h-[70dvh] overflow-y-auto">
+    <div className="max-h-[70dvh] overflow-y-auto" style={{ padding: '0 var(--card-px) 2rem' }}>
       <div className="flex flex-col gap-5">
         {/* Destination */}
         <LocationInput value={destination} onChange={(v) => { setDestination(v); setDestCoords(null); }} onSelectCoords={(lat, lon) => setDestCoords({ latitude: lat, longitude: lon })} placeholder="Destination" />
@@ -243,7 +243,7 @@ export function EditTripSheet({ trip, onClose }: EditTripSheetProps) {
         </div>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-12 pb-4">
         <Button onClick={handleSave} disabled={!destination.trim() || saving}>
           {saving ? 'Saving...' : 'Save Changes'}
         </Button>

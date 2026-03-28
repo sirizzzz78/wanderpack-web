@@ -37,7 +37,7 @@ export function EditItemSheet({ item, existingCategories, onClose }: EditItemShe
   const categories = existingCategories.filter(c => c !== 'Essentials' || !isMustPack);
 
   return (
-    <div className="px-6 pb-8">
+    <div style={{ padding: '0 var(--card-px) 2rem' }}>
       <p className="text-[15px] text-[var(--text-secondary)] mb-6">Update this item's details.</p>
 
       <div className="flex flex-col gap-3">

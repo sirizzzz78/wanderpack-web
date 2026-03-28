@@ -71,25 +71,26 @@ export function PostTripFeedbackSheet({ tripId, onClose }: PostTripFeedbackSheet
   };
 
   return (
-    <div className="px-6 pb-8 max-h-[70dvh] overflow-y-auto">
-      <p className="text-[15px] text-[var(--text-secondary)] mb-6">Your feedback helps improve future packing lists.</p>
+    <div className="max-h-[70dvh] overflow-y-auto flex flex-col gap-8" style={{ padding: '0 var(--card-px) 2rem' }}>
+      <p className="text-[15px] text-[var(--text-secondary)]">Your feedback helps improve future packing lists.</p>
 
       {/* Unpacked items */}
       {packedNames.length > 0 && (
-        <div className="mb-6">
-          <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-[var(--blue-faint)] mb-2">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-[var(--blue-faint)] mb-3">
             What did you pack but not use?
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2.5">
             {packedNames.map(name => {
               const selected = unpackedSelections.has(name);
               return (
                 <button
                   key={name}
                   onClick={() => toggleUnpacked(name)}
-                  className={`px-3.5 py-2.5 rounded-[12px] text-[13px] font-medium border border-[var(--border)] transition-colors ${
-                    selected ? 'bg-[var(--lavender)] text-white border-transparent' : 'bg-[var(--surface)] text-[var(--text-primary)]'
+                  className={`rounded-full text-[14px] font-medium border transition-colors ${
+                    selected ? 'bg-[var(--lavender)] text-white border-transparent' : 'text-[var(--blue-faint)] border-[var(--border)]'
                   }`}
+                  style={{ padding: '7px 18px', minHeight: 0 }}
                 >
                   {name}
                 </button>
@@ -100,11 +101,11 @@ export function PostTripFeedbackSheet({ tripId, onClose }: PostTripFeedbackSheet
       )}
 
       {/* Wishlist */}
-      <div className="mb-6">
-        <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-[var(--blue-faint)] mb-2">
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-[var(--blue-faint)] mb-3">
           What do you wish you'd brought?
         </p>
-        <Card className="flex items-center gap-2">
+        <Card className="flex items-center gap-2" style={{ padding: '10px 14px' }}>
           <input
             type="text"
             value={newName}
@@ -112,26 +113,20 @@ export function PostTripFeedbackSheet({ tripId, onClose }: PostTripFeedbackSheet
             placeholder="Item name"
             className="flex-1 bg-transparent text-[15px] text-[var(--text-primary)] outline-none min-w-0"
           />
+          <select
+            value={newCategory}
+            onChange={e => setNewCategory(e.target.value)}
+            className="bg-transparent text-[13px] font-medium text-[var(--lavender)] outline-none cursor-pointer"
+            style={{ backgroundColor: 'white', padding: '4px 8px', borderRadius: 8 }}
+          >
+            {CATEGORY_OPTIONS.map(c => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
           <button onClick={addWishlist} disabled={!newName.trim()} aria-label="Add wishlist item">
-            <PlusCircle size={24} className={newName.trim() ? 'text-[var(--lavender)]' : 'text-[var(--border)]'} />
+            <PlusCircle size={20} className={newName.trim() ? 'text-[var(--lavender)]' : 'text-[var(--border)]'} />
           </button>
         </Card>
-        <div className="flex flex-wrap gap-1.5 mt-2">
-          {CATEGORY_OPTIONS.map(c => (
-            <button
-              key={c}
-              onClick={() => setNewCategory(c)}
-              className={`px-2.5 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${
-                newCategory === c
-                  ? 'bg-[var(--lavender)] text-white'
-                  : 'text-[var(--lavender)]'
-              }`}
-              style={newCategory !== c ? { backgroundColor: 'color-mix(in srgb, var(--lavender) 12%, transparent)' } : {}}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
         {wishlistItems.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-2">
             {wishlistItems.map(item => (
@@ -146,7 +141,9 @@ export function PostTripFeedbackSheet({ tripId, onClose }: PostTripFeedbackSheet
         )}
       </div>
 
-      <Button onClick={handleSave}>Save Feedback</Button>
+      <div>
+        <Button onClick={handleSave}>Save Feedback</Button>
+      </div>
     </div>
   );
 }
