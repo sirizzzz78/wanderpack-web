@@ -9,7 +9,7 @@ import { useToast } from '../ui/Toast';
 import { ACTIVITY_LIST, EVENT_LIST, TRANSPORTS } from '../../lib/constants';
 import { toISODate, addDays, getDatesInRange } from '../../lib/dateUtils';
 import { getLearnedNewItems } from '../../db/hooks';
-import { generatePackingList } from '../../lib/packingCalculator';
+import { generatePackingList, getClothingPreferences } from '../../lib/packingCalculator';
 import { fetchWeather } from '../../lib/weatherService';
 import { db } from '../../db/database';
 import type { Trip } from '../../db/models';
@@ -57,7 +57,8 @@ export function EditTripSheet({ trip, onClose }: EditTripSheetProps) {
       const packedNames = new Set(allItems.filter(i => i.isPacked).map(i => i.name.toLowerCase()));
 
       // Generate packing list without weather first (instant)
-      const drafts = generatePackingList(tripData, null);
+      const prefs = getClothingPreferences();
+      const drafts = generatePackingList(tripData, null, prefs);
       const learnedNew = await getLearnedNewItems([...drafts.map(d => d.name), ...userItems.map(i => i.name)]);
       const allDrafts = [...drafts, ...learnedNew.map(li => ({
         name: li.name, category: li.category, quantity: li.quantity, isMustPack: li.isMustPack,
@@ -89,7 +90,7 @@ export function EditTripSheet({ trip, onClose }: EditTripSheetProps) {
       // Fetch weather in the background and merge weather-specific items if any
       fetchWeather(trimmed, startDate, endDate, undefined, destCoords ?? undefined).then(async (weather) => {
         if (!weather) return;
-        const weatherDrafts = generatePackingList(tripData, weather);
+        const weatherDrafts = generatePackingList(tripData, weather, prefs);
         const currentItems = await db.packingItems.where('tripId').equals(trip.id).toArray();
         const currentNames = new Set(currentItems.map(i => i.name.toLowerCase()));
         const weatherOnlyItems = weatherDrafts

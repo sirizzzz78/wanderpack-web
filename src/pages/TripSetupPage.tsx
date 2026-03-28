@@ -10,7 +10,7 @@ import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { useToast } from '../components/ui/Toast';
 import { ACTIVITY_LIST, EVENT_LIST, ALL_ACTIVITIES, TRANSPORTS } from '../lib/constants';
 import { toISODate, addDays, getDatesInRange, formatMediumDate } from '../lib/dateUtils';
-import { generatePackingList } from '../lib/packingCalculator';
+import { generatePackingList, getClothingPreferences } from '../lib/packingCalculator';
 import { fetchWeather } from '../lib/weatherService';
 import { createTrip, getLearnedNewItems } from '../db/hooks';
 import { db } from '../db/database';
@@ -108,7 +108,8 @@ export function TripSetupPage() {
       };
 
       // Generate packing list without weather (instant)
-      const drafts = generatePackingList(tripData, null);
+      const prefs = getClothingPreferences();
+      const drafts = generatePackingList(tripData, null, prefs);
 
       // Get learned items
       const learnedNew = await getLearnedNewItems(drafts.map(d => d.name));
@@ -143,7 +144,7 @@ export function TripSetupPage() {
       // Fetch weather in background and add weather-specific items
       fetchWeather(destination, startDate, endDate, undefined, destCoords ?? undefined).then(async (weather) => {
         if (!weather) return;
-        const weatherDrafts = generatePackingList(tripData, weather);
+        const weatherDrafts = generatePackingList(tripData, weather, prefs);
         const currentItems = await db.packingItems.where('tripId').equals(trip.id).toArray();
         const currentNames = new Set(currentItems.map(i => i.name.toLowerCase()));
         const weatherOnlyItems = weatherDrafts

@@ -1,9 +1,10 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Briefcase, BarChart3 } from 'lucide-react';
+import { Briefcase, BarChart3, Settings } from 'lucide-react';
 
 const TABS = [
   { path: '/', label: 'Trips', icon: Briefcase },
   { path: '/stats', label: 'Stats', icon: BarChart3 },
+  { path: '/settings', label: 'Settings', icon: Settings },
 ] as const;
 
 export function TabBar() {

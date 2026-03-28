@@ -7,6 +7,18 @@ export interface PackingItemDraft {
   isMustPack: boolean;
 }
 
+export interface ClothingPreferences {
+  gender: 'none' | 'masculine' | 'feminine';
+  bottoms: 'pants' | 'skirts' | 'both';
+}
+
+export function getClothingPreferences(): ClothingPreferences {
+  return {
+    gender: (localStorage.getItem('readiLi.genderPref') as ClothingPreferences['gender']) || 'none',
+    bottoms: (localStorage.getItem('readiLi.bottomsPref') as ClothingPreferences['bottoms']) || 'pants',
+  };
+}
+
 export function generatePackingList(
   trip: {
     destination: string;
@@ -19,8 +31,10 @@ export function generatePackingList(
     isInternational: boolean;
     transportation: string[];
   },
-  weather?: WeatherSummary | null
+  weather?: WeatherSummary | null,
+  preferences?: ClothingPreferences
 ): PackingItemDraft[] {
+  const prefs = preferences ?? { gender: 'none', bottoms: 'pants' };
   let items: PackingItemDraft[] = [];
 
   const effectiveDays = getLongestStretch(trip);
@@ -28,16 +42,40 @@ export function generatePackingList(
   const outfits = Math.ceil(effectiveDays / rewear);
 
   // Base items
+  const bottomsQty = Math.max(Math.ceil(outfits / 2), 1);
   items.push(
     { name: 'Phone Charger', category: 'Essentials', quantity: 1, isMustPack: true },
     { name: 'Portable Charger / Power Bank', category: 'Essentials', quantity: 1, isMustPack: false },
     { name: 'Tops', category: 'Clothing', quantity: outfits, isMustPack: false },
-    { name: 'Bottoms', category: 'Clothing', quantity: Math.max(Math.ceil(outfits / 2), 1), isMustPack: false },
+  );
+
+  // Bottoms: preference-aware
+  if (prefs.gender === 'none') {
+    items.push({ name: 'Bottoms', category: 'Clothing', quantity: bottomsQty, isMustPack: false });
+  } else if (prefs.bottoms === 'both') {
+    items.push(
+      { name: 'Pants', category: 'Clothing', quantity: Math.floor(bottomsQty / 2) || 1, isMustPack: false },
+      { name: 'Skirts', category: 'Clothing', quantity: Math.ceil(bottomsQty / 2), isMustPack: false },
+    );
+  } else {
+    const name = prefs.bottoms === 'skirts' ? 'Skirts' : 'Pants';
+    items.push({ name, category: 'Clothing', quantity: bottomsQty, isMustPack: false });
+  }
+
+  items.push(
     { name: 'Underwear', category: 'Clothing', quantity: outfits, isMustPack: false },
     { name: 'Socks', category: 'Clothing', quantity: outfits, isMustPack: false },
     { name: 'Pajamas', category: 'Clothing', quantity: 1, isMustPack: false },
     { name: 'Toiletries Kit', category: 'Toiletries', quantity: 1, isMustPack: false },
   );
+
+  // Feminine toiletry additions
+  if (prefs.gender === 'feminine') {
+    items.push(
+      { name: 'Hair Ties', category: 'Toiletries', quantity: 1, isMustPack: false },
+      { name: 'Makeup Bag', category: 'Toiletries', quantity: 1, isMustPack: false },
+    );
+  }
 
   // Health
   items.push(
@@ -79,7 +117,7 @@ export function generatePackingList(
 
   // Activities
   for (const activity of trip.activities) {
-    items.push(...getActivityItems(activity, outfits));
+    items.push(...getActivityItems(activity, outfits, prefs));
   }
 
   // Weather
@@ -94,7 +132,7 @@ function item(name: string, category: string, quantity = 1): PackingItemDraft {
   return { name, category, quantity, isMustPack: false };
 }
 
-function getActivityItems(activity: string, outfits: number): PackingItemDraft[] {
+function getActivityItems(activity: string, outfits: number, prefs: ClothingPreferences): PackingItemDraft[] {
   switch (activity) {
     case 'Sightseeing':
       return [
@@ -185,6 +223,15 @@ function getActivityItems(activity: string, outfits: number): PackingItemDraft[]
         item('Repair Kit', 'Backpacking'), item('Permits', 'Backpacking'),
       ];
     case 'Business':
+      if (prefs.gender === 'feminine') {
+        return [
+          { name: 'Blouses', category: 'Business', quantity: outfits, isMustPack: false },
+          item('Blazer', 'Business'), item('Dress Shoes', 'Business'),
+          { name: 'Dress Socks', category: 'Business', quantity: outfits, isMustPack: false },
+          item('Belt', 'Business'), item('Laptop + Charger', 'Business'),
+          item('Portfolio / Notebook', 'Business'), item('Statement Jewelry', 'Business'),
+        ];
+      }
       return [
         { name: 'Dress Shirts', category: 'Business', quantity: outfits, isMustPack: false },
         item('Blazer', 'Business'), item('Dress Shoes', 'Business'),

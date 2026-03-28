@@ -36,10 +36,13 @@ const PackingListPage = lazyWithRetry(() =>
 const StatsPage = lazyWithRetry(() =>
   import('./pages/StatsPage').then(m => ({ default: m.StatsPage }))
 );
+const SettingsPage = lazyWithRetry(() =>
+  import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage }))
+);
 
 function TabBarWrapper() {
   const location = useLocation();
-  const showTabBar = location.pathname === '/' || location.pathname === '/stats';
+  const showTabBar = location.pathname === '/' || location.pathname === '/stats' || location.pathname === '/settings';
   if (!showTabBar) return null;
   return <TabBar />;
 }
@@ -102,6 +105,7 @@ export function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/stats" element={<StatsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
               <Route path="/setup" element={<TripSetupPage />} />
               <Route path="/trip/:id" element={<PackingListPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
