@@ -15,6 +15,8 @@ export function useSpeechRecognition() {
   const intentionalStopRef = useRef(false);
   const finalTranscriptRef = useRef('');
   const interimTranscriptRef = useRef('');
+  const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onSilenceTimeoutRef = useRef<(() => void) | null>(null);
 
   const isSupported = !!SpeechRecognitionClass;
 
@@ -47,6 +49,7 @@ export function useSpeechRecognition() {
       interimTranscriptRef.current = interim;
       setTranscript(final);
       setInterimTranscript(interim);
+      resetSilenceTimer();
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
@@ -77,12 +80,21 @@ export function useSpeechRecognition() {
     try {
       recognition.start();
       setIsListening(true);
+      resetSilenceTimer();
     } catch {
       setError('Could not start speech recognition.');
     }
   }, []);
 
+  const resetSilenceTimer = useCallback(() => {
+    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+    silenceTimerRef.current = setTimeout(() => {
+      onSilenceTimeoutRef.current?.();
+    }, 5000);
+  }, []);
+
   const stopListening = useCallback((): string => {
+    if (silenceTimerRef.current) { clearTimeout(silenceTimerRef.current); silenceTimerRef.current = null; }
     intentionalStopRef.current = true;
     if (recognitionRef.current) {
       recognitionRef.current.stop();
@@ -102,12 +114,15 @@ export function useSpeechRecognition() {
   useEffect(() => {
     return () => {
       intentionalStopRef.current = true;
+      if (silenceTimerRef.current) { clearTimeout(silenceTimerRef.current); silenceTimerRef.current = null; }
       if (recognitionRef.current) {
         recognitionRef.current.abort();
         recognitionRef.current = null;
       }
     };
   }, []);
+
+  const clearError = useCallback(() => setError(null), []);
 
   return {
     isListening,
@@ -117,5 +132,7 @@ export function useSpeechRecognition() {
     isSupported,
     startListening,
     stopListening,
+    onSilenceTimeoutRef,
+    clearError,
   };
 }

@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
-  base: '/readili-web/',
+  base: '/wanderpack/',
   plugins: [
     react(),
     tailwindcss(),
@@ -13,13 +13,13 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['fonts/*.ttf', 'icons/*.png'],
       manifest: {
-        name: 'readiLi',
-        short_name: 'readiLi',
+        name: 'Wanderpack',
+        short_name: 'Wanderpack',
         description: 'Smart packing list generator for trips',
         theme_color: '#7A9BB5',
         background_color: '#FAFAFA',
         display: 'standalone',
-        start_url: '/readili-web/',
+        start_url: '/wanderpack/',
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },

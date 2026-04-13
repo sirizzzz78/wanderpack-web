@@ -16,13 +16,13 @@ import type { Trip, PackingItem, LearnedItem } from './models';
  *   reliably index booleans across all browsers.
  */
 
-class ReadiLiDB extends Dexie {
+class WanderpackDB extends Dexie {
   trips!: Table<Trip, string>;
   packingItems!: Table<PackingItem, string>;
   learnedItems!: Table<LearnedItem, string>;
 
   constructor() {
-    super('readili');
+    super('wanderpack');
 
     // v1: Initial schema
     this.version(1).stores({
@@ -41,4 +41,4 @@ class ReadiLiDB extends Dexie {
   }
 }
 
-export const db = new ReadiLiDB();
+export const db = new WanderpackDB();

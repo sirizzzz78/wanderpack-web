@@ -1,5 +1,5 @@
 /**
- * Maps numeric ISO 3166-1 country codes (as strings) to readiLi continent names.
+ * Maps numeric ISO 3166-1 country codes (as strings) to Wanderpack continent names.
  * Derived from Natural Earth countries-110m dataset (177 features).
  * Americas split into "North America" and "South America" per country.
  */

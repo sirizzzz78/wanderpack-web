@@ -1,4 +1,4 @@
-# readiLi — Web
+# Wanderpack — Web
 
 A smart packing list app that learns what you pack over time. Web companion to the iOS app, built with React and TypeScript.
 
@@ -45,4 +45,4 @@ The app works without a Pexels key — destination photos just won't load.
 
 ## License
 
-Copyright (c) 2026 readiLi. All rights reserved. See [LICENSE](LICENSE) for details.
+Copyright (c) 2026 Wanderpack. All rights reserved. See [LICENSE](LICENSE) for details.

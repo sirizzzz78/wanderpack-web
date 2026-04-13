@@ -10,11 +10,11 @@ const STYLE_OPTIONS: { value: 'none' | 'masculine' | 'feminine'; label: string; 
 ];
 
 const CARE_TOGGLES: { key: string; lsKey: string; title: string; subtitle: string; icon: typeof Droplet; iconColor: string }[] = [
-  { key: 'menstrualCare', lsKey: 'readiLi.menstrualCare', title: 'Menstrual Care', subtitle: 'Pads, tampons, or cup', icon: Droplet, iconColor: 'var(--lavender)' },
-  { key: 'groomingKit', lsKey: 'readiLi.groomingKit', title: 'Shaving / Grooming', subtitle: 'Razor, shaving cream, trimmer', icon: Scissors, iconColor: 'var(--lavender)' },
-  { key: 'hairStyling', lsKey: 'readiLi.hairStyling', title: 'Hair Styling', subtitle: 'Dryer, straightener, products', icon: Sparkles, iconColor: 'var(--lavender)' },
-  { key: 'contactLens', lsKey: 'readiLi.contactLens', title: 'Contact Lenses', subtitle: 'Solution, case, spare pair', icon: Eye, iconColor: 'var(--lavender)' },
-  { key: 'makeup', lsKey: 'readiLi.makeup', title: 'Makeup', subtitle: 'Foundation, brushes, essentials', icon: Palette, iconColor: 'var(--lavender)' },
+  { key: 'menstrualCare', lsKey: 'Wanderpack.menstrualCare', title: 'Menstrual Care', subtitle: 'Pads, tampons, or cup', icon: Droplet, iconColor: 'var(--lavender)' },
+  { key: 'groomingKit', lsKey: 'Wanderpack.groomingKit', title: 'Shaving / Grooming', subtitle: 'Razor, shaving cream, trimmer', icon: Scissors, iconColor: 'var(--lavender)' },
+  { key: 'hairStyling', lsKey: 'Wanderpack.hairStyling', title: 'Hair Styling', subtitle: 'Dryer, straightener, products', icon: Sparkles, iconColor: 'var(--lavender)' },
+  { key: 'contactLens', lsKey: 'Wanderpack.contactLens', title: 'Contact Lenses', subtitle: 'Solution, case, spare pair', icon: Eye, iconColor: 'var(--lavender)' },
+  { key: 'makeup', lsKey: 'Wanderpack.makeup', title: 'Makeup', subtitle: 'Foundation, brushes, essentials', icon: Palette, iconColor: 'var(--lavender)' },
 ];
 
 function getBottomsSplitLabel(ratio: number): string {
@@ -28,10 +28,10 @@ function getBottomsSplitLabel(ratio: number): string {
 
 export function SettingsPage() {
   const [gender, setGender] = useState<'none' | 'masculine' | 'feminine'>(
-    () => (localStorage.getItem('readiLi.genderPref') as 'none' | 'masculine' | 'feminine') || 'none'
+    () => (localStorage.getItem('Wanderpack.genderPref') as 'none' | 'masculine' | 'feminine') || 'none'
   );
   const [skirtsRatio, setSkirtsRatio] = useState(
-    () => Number(localStorage.getItem('readiLi.skirtsRatio') ?? '0')
+    () => Number(localStorage.getItem('Wanderpack.skirtsRatio') ?? '0')
   );
   const [careToggles, setCareToggles] = useState(() => {
     const state: Record<string, boolean> = {};
@@ -43,17 +43,17 @@ export function SettingsPage() {
 
   const handleGenderChange = (value: 'none' | 'masculine' | 'feminine') => {
     setGender(value);
-    localStorage.setItem('readiLi.genderPref', value);
+    localStorage.setItem('Wanderpack.genderPref', value);
     // Auto-set slider default
     setSkirtsRatio(50);
-    localStorage.setItem('readiLi.skirtsRatio', '50');
+    localStorage.setItem('Wanderpack.skirtsRatio', '50');
   };
 
   const handleSliderChange = (val: number) => {
     // Snap to 25% increments
     const snapped = Math.round(val / 25) * 25;
     setSkirtsRatio(snapped);
-    localStorage.setItem('readiLi.skirtsRatio', String(snapped));
+    localStorage.setItem('Wanderpack.skirtsRatio', String(snapped));
   };
 
   const handleToggle = (key: string, lsKey: string, val: boolean) => {

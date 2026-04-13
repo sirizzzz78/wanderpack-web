@@ -14,7 +14,7 @@ export function checkAndNotify(trips: Trip[]) {
 
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const notifiedKey = 'readiLi.lastNotified';
+  const notifiedKey = 'Wanderpack.lastNotified';
   const lastNotified = localStorage.getItem(notifiedKey);
   const todayStr = today.toISOString().split('T')[0];
 
@@ -30,7 +30,7 @@ export function checkAndNotify(trips: Trip[]) {
     if (daysUntil === 3) {
       new Notification(`Trip to ${trip.destination} in 3 days`, {
         body: 'Time to start packing!',
-        icon: '/readili-web/icons/icon-192.png',
+        icon: '/wanderpack/icons/icon-192.png',
       });
       localStorage.setItem(notifiedKey, todayStr);
     }
@@ -38,7 +38,7 @@ export function checkAndNotify(trips: Trip[]) {
     if (daysUntil === 1) {
       new Notification(`Trip to ${trip.destination} is tomorrow!`, {
         body: "Don't forget to finish packing before you leave.",
-        icon: '/readili-web/icons/icon-192.png',
+        icon: '/wanderpack/icons/icon-192.png',
       });
       localStorage.setItem(notifiedKey, todayStr);
     }

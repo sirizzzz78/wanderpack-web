@@ -16,7 +16,7 @@ function lazyWithRetry(factory: () => Promise<{ default: React.ComponentType }>)
     factory().catch(() => {
       // Chunk failed to load — likely stale SW cache after a deploy.
       // Reload once; the flag prevents infinite reload loops.
-      const key = 'readiLi.chunkReload';
+      const key = 'Wanderpack.chunkReload';
       if (!sessionStorage.getItem(key)) {
         sessionStorage.setItem(key, '1');
         window.location.reload();
@@ -82,7 +82,7 @@ export function App() {
 
   // Clear chunk-reload flag on successful load
   useEffect(() => {
-    sessionStorage.removeItem('readiLi.chunkReload');
+    sessionStorage.removeItem('Wanderpack.chunkReload');
   }, []);
 
   // Storage quota check
@@ -102,7 +102,7 @@ export function App() {
   }
 
   return (
-    <BrowserRouter basename="/readili-web">
+    <BrowserRouter basename="/wanderpack">
       {pendingSettingsNav && <SettingsRedirect onDone={() => setPendingSettingsNav(false)} />}
       <ErrorBoundary>
         <div className="app-shell">

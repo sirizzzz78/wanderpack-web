@@ -3,25 +3,25 @@
 /* Quicksand Font Faces */
 @font-face {
   font-family: 'Quicksand';
-  src: url('/readili-web/fonts/Quicksand-Light.ttf') format('truetype');
+  src: url('/wanderpack/fonts/Quicksand-Light.ttf') format('truetype');
   font-weight: 300;
   font-display: swap;
 }
 @font-face {
   font-family: 'Quicksand';
-  src: url('/readili-web/fonts/Quicksand-Regular.ttf') format('truetype');
+  src: url('/wanderpack/fonts/Quicksand-Regular.ttf') format('truetype');
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
   font-family: 'Quicksand';
-  src: url('/readili-web/fonts/Quicksand-Medium.ttf') format('truetype');
+  src: url('/wanderpack/fonts/Quicksand-Medium.ttf') format('truetype');
   font-weight: 500;
   font-display: swap;
 }
 @font-face {
   font-family: 'Quicksand';
-  src: url('/readili-web/fonts/Quicksand-SemiBold.ttf') format('truetype');
+  src: url('/wanderpack/fonts/Quicksand-SemiBold.ttf') format('truetype');
   font-weight: 600;
   font-display: swap;
 }
@@ -302,6 +302,15 @@ a:focus-visible,
   border: 3px solid var(--salmon);
   animation: voice-fab-ring 1.5s ease-out infinite;
   pointer-events: none;
+}
+
+/* Voice countdown ring — depletes over 5s */
+@keyframes voice-countdown-deplete {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: 188.5; /* 2 * PI * 30 */ }
+}
+.voice-countdown-ring circle {
+  animation: voice-countdown-deplete 5s linear forwards;
 }
 
 /* Voice match highlight flash */

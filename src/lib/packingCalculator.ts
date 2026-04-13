@@ -19,13 +19,13 @@ export interface ClothingPreferences {
 
 export function getClothingPreferences(): ClothingPreferences {
   return {
-    gender: (localStorage.getItem('readiLi.genderPref') as ClothingPreferences['gender']) || 'none',
-    skirtsRatio: Number(localStorage.getItem('readiLi.skirtsRatio') ?? '0'),
-    menstrualCare: localStorage.getItem('readiLi.menstrualCare') === 'true',
-    groomingKit: localStorage.getItem('readiLi.groomingKit') === 'true',
-    hairStyling: localStorage.getItem('readiLi.hairStyling') === 'true',
-    contactLens: localStorage.getItem('readiLi.contactLens') === 'true',
-    makeup: localStorage.getItem('readiLi.makeup') === 'true',
+    gender: (localStorage.getItem('Wanderpack.genderPref') as ClothingPreferences['gender']) || 'none',
+    skirtsRatio: Number(localStorage.getItem('Wanderpack.skirtsRatio') ?? '0'),
+    menstrualCare: localStorage.getItem('Wanderpack.menstrualCare') === 'true',
+    groomingKit: localStorage.getItem('Wanderpack.groomingKit') === 'true',
+    hairStyling: localStorage.getItem('Wanderpack.hairStyling') === 'true',
+    contactLens: localStorage.getItem('Wanderpack.contactLens') === 'true',
+    makeup: localStorage.getItem('Wanderpack.makeup') === 'true',
   };
 }
 

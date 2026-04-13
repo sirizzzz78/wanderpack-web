@@ -49,7 +49,7 @@ export function OnboardingPage({ onComplete, onCustomize }: OnboardingPageProps)
                 Every trip starts{'\n'}with a good list
               </h1>
               <p className="text-[var(--text-secondary)] mt-3 px-8" style={{ fontSize: 'var(--text-body)' }}>
-                readiLi builds a packing list tailored to where you're going and what you're doing.
+                Wanderpack builds a packing list tailored to where you're going and what you're doing.
               </p>
             </div>
           </div>

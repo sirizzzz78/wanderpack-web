@@ -265,12 +265,12 @@ export function TripSetupPage() {
           </div>
         </div>
         {/* Settings nudge (first trip only) */}
-        {!localStorage.getItem('readiLi.hasCustomized') && (
+        {!localStorage.getItem('Wanderpack.hasCustomized') && (
           <button
             className="w-full max-w-sm rounded-[14px] bg-[var(--surface)] border border-[var(--border)] flex items-center gap-3 text-left"
             style={{ padding: 'var(--card-px)' }}
             onClick={() => {
-              localStorage.setItem('readiLi.hasCustomized', 'true');
+              localStorage.setItem('Wanderpack.hasCustomized', 'true');
               setShowSettingsModal(true);
             }}
           >

@@ -24,7 +24,7 @@ export function HomePage() {
   const [showLearned, setShowLearned] = useState(false);
   const [feedbackTripId, setFeedbackTripId] = useState<string | null>(null);
   const [dismissedFeedback, setDismissedFeedback] = useState<Set<string>>(
-    () => new Set(JSON.parse(localStorage.getItem('readiLi.dismissedFeedback') || '[]'))
+    () => new Set(JSON.parse(localStorage.getItem('Wanderpack.dismissedFeedback') || '[]'))
   );
 
   const today = useMemo(() => {
@@ -56,7 +56,7 @@ export function HomePage() {
     setDismissedFeedback(prev => {
       const next = new Set(prev);
       next.add(tripId);
-      localStorage.setItem('readiLi.dismissedFeedback', JSON.stringify([...next]));
+      localStorage.setItem('Wanderpack.dismissedFeedback', JSON.stringify([...next]));
       return next;
     });
   }, []);

@@ -213,7 +213,7 @@ export async function getLearnedNewItems(existingNames: string[]): Promise<Learn
 
 // ── Unused Items (localStorage-backed) ──
 
-const UNUSED_KEY = 'readiLi.unusedItems';
+const UNUSED_KEY = 'Wanderpack.unusedItems';
 
 export function getUnusedNames(): Set<string> {
   try {
